@@ -4,9 +4,7 @@
 #
 # This script detects the running distribution and installs cloudoptimizer for
 # the user.
-#
-# TODO:
-# - Check for existing installation
+
 
 #############
 # Constants #
