@@ -136,18 +136,18 @@ download() {
 }
 
 showhelp() {
-    message "-a|--auto           Automatic installation - same as using --accept-eula, --yes, --force, and --noupdate."
+    message "-a|--auto           Automatic installation: the same as using --accept-eula, --yes, --force, and --noupdate."
     message "-c|--check          Check to see if installation is possible, but don't install any files."
-    message "-e|--accept-eula    Accept the CloudOptimizer end user license agreement (for automated install)"
-    message "-f|--force          Ignore warnings about existing installation; don't back up config"
-    message "-h|--help           Show this help screen"
-    message "-n|--noupdate       Don't check for a more recent version of the installer.  Use this with automated install."
-    message "-p|--previous       Install the previous version (not recommended unless advised by CloudOpt Support)"
-    message "-r|--reposonly      Only install the software repositories"
-    message "-s|--support        Collect diagnostic information for CloudOpt support if this script failed."
+    message "-e|--accept-eula    Accept the CloudOptimizer end user license agreement (for automated installation)."
+    message "-f|--force          A stronger --yes, will bypass prompts for actions that may be destructive (for automated installation)."
+    message "-h|--help           Show this help screen."
+    message "-n|--noupdate       Don't check for a more recent version of the installer (recommended for automated installation)."
+    message "-p|--previous       Install the previous version (not recommended unless advised by CloudOpt Support)."
+    message "-r|--reposonly      Only install the software repositories."
+    message "-s|--support        Collect diagnostic information in a file for CloudOpt support if this script failed."
     message "-u|--remove         Remove CloudOptimizer but leave all cache and configuration files."
-    message "-y|--yes            Assume yes at all prompts (automated install)"
-    message "-x|--purge          Remove CloudOptimizer and delete all cache and configuration files."
+    message "-y|--yes            Bypass most prompts, answering yes (for automated installation)."
+    message "-x|--purge          Remove CloudOptimizer and delete everything that is not removed by the package manager."
 }
 
 # message()
@@ -233,6 +233,10 @@ remove_apt() {
         rm -rf $homedir && message "OK" status || die "Couldn't remove home directory.  Exiting."
         message "Removing /etc/cloudoptimizer" action
         rm -rf /etc/cloudoptimizer && message "OK" status
+        message "Removing /var/run/cloudopt-webserver" action
+        rm -rf /var/run/cloudopt-webserver && message "OK" status
+        message "Removing cores" action
+        rm -f /var/crash/cloudopt* && message "OK" status
         message "Removing /var/log/cloudoptimizer" action
         logdir=`cloudconfig get /config/log_dir` || die "Couldn't determine log directory.  Exiting."
         rm -rf $logdir && message "OK" status || die "Couldn't remove log directory.  Exiting."
@@ -279,6 +283,10 @@ remove_yum() {
         rm -rf $homedir && message "OK" status || die "Couldn't remove home directory.  Exiting."
         message "Removing /etc/cloudoptimizer" action
         rm -rf /etc/cloudoptimizer && message "OK" status
+        message "Removing /var/run/cloudopt-webserver" action
+        rm -rf /var/run/cloudopt-webserver && message "OK" status
+        message "Removing cores" action
+        rm -f /var/crash/cloudopt* && message "OK" status
         message "Removing /var/log/cloudoptimizer" action
         logdir=`cloudconfig get /config/log_dir` || die "Couldn't determine log directory.  Exiting."
         rm -rf $logdir && message "OK" status || die "Couldn't remove log directory.  Exiting."
