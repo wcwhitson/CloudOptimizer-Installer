@@ -43,13 +43,25 @@ CLOUDOPTIMIZER_TEST_DEB12_64_LABEL="1.3.0"
 # Other Packages
 COLLECTD_4_10_3_RPM5_64="ftp://ftp.pbone.net/mirror/download.fedora.redhat.com/pub/fedora/epel/5/x86_64/collectd-4.10.3-1.el5.x86_64.rpm"
 MONIT_5_1_1_RPM6_64="http://dl.fedoraproject.org/pub/epel/6/x86_64/monit-5.1.1-4.el6.x86_64.rpm"
+MONIT_5_1_1_RPM5_64="http://yum.cloudopt.com/CentOS/x86_64/monit-5.1.1-1.el5.rf.x86_64.rpm"
 XFSPROGS_RPM5_64="ftp://ftp.pbone.net/mirror/ftp.freshrpms.net/pub/freshrpms/pub/freshrpms/redhat/testing/EL5/xfs/x86_64/xfsprogs-2.9.4-4.el5/xfsprogs-2.9.4-4.el5.x86_64.rpm"
 XFSPROGS_RPM6_64="ftp://ftp.pbone.net/mirror/ftp.centos.org/6.3/os/x86_64/Packages/xfsprogs-3.1.1-7.el6.x86_64.rpm"
 LIBNETFILTER_QUEUE_RPM5_32="http://yum.cloudopt.com/CentOS/i386/libnetfilter_queue-1.0.0-1.el5.i386.rpm"
 LIBNETFILTER_QUEUE_SO_1_RPM5_32="http://yum.cloudopt.com/CentOS/SRPMS/libnetfilter_queue-1.0.0-1.el5.src.rpm"
 LIBNFNETLINK_SO_0_RPM5_32="http://yum.cloudopt.com/CentOS/i386/libnfnetlink-1.0.0-1.el5.i386.rpm"
+LIBNET_RPM6_64="http://yum.cloudopt.com/CentOS-6/x86_64/libnet-1.1.5-2cnt6.x86_64.rpm"
+LIBNET_DEVEL_RPM6_64="http://yum.cloudopt.com/CentOS-6/x86_64/libnet-devel-1.1.5-2cnt6.x86_64.rpm"
+LIBNETFILTER_QUEUE_RPM6_64="http://yum.cloudopt.com/CentOS-6/x86_64/libnetfilter_queue-1.0.0-2cnt6.x86_64.rpm"
+LIBNETFILTER_QUEUE_SO_1_RPM6_64="http://yum.cloudopt.com/CentOS-6/x86_64/libnetfilter_queue-devel-1.0.0-2cnt6.x86_64.rpm"
+LIBNFNETLINK_RPM6_64="http://yum.cloudopt.com/CentOS-6/x86_64/libnfnetlink-1.0.0-2cnt6.x86_64.rpm"
+LIBNFNETLINK_SO_0_RPM6_64="http://yum.cloudopt.com/CentOS-6/x86_64/libnfnetlink-devel-1.0.0-2cnt6.x86_64.rpm"
+NC_RPM6_64="ftp://rpmfind.net/linux/centos/6.3/os/x86_64/Packages/nc-1.84-22.el6.x86_64.rpm"
+GPERFTOOLS_LIBS_RPM6_64="ftp://fr2.rpmfind.net/linux/epel/6/x86_64/gperftools-libs-2.0-3.el6.2.x86_64.rpm"
+GPERFTOOLS_LIBS_RPM5_64="http://puias.math.ias.edu/data/puias/computational/5/x86_64/gperftools-libs-2.0-3.el5.2.x86_64.rpm"
 
 log="/var/log/cloudoptimizer-install.log"
+
+rundir=`pwd "${BASH_SOURCE[0]}"`
 
 
 #############
@@ -116,7 +128,10 @@ yesno() {
 # download()
 # Uses $download to download the provided filename or exit with an error.
 download() {
-    if [ "$2" == "silent" ]; then
+    if [ "$local" == "1" ]; then
+        message "Local install: checking for presence of the required package" action
+        [ -f "$1" ] && message "OK" status || die "Required package $1 is not present.  You must put it in the same directory as this installer."  
+    elif [ "$2" == "silent" ]; then
         $download $1
         if [ $? = 0 ]; then
             return $?
@@ -141,10 +156,13 @@ showhelp() {
     message "-e|--accept-eula    Accept the CloudOptimizer end user license agreement (for automated installation)."
     message "-f|--force          A stronger --yes, will bypass prompts for actions that may be destructive (for automated installation)."
     message "-h|--help           Show this help screen."
+    message "-l|--local          Perform an install without connection to the Internet.  Package files must be located in the same directory as the script."
+    message "-m|--manifest       Generate a script that will download all the required packages on another system (for local install.)"
     message "-n|--noupdate       Don't check for a more recent version of the installer (recommended for automated installation)."
     message "-p|--previous       Install the previous version (not recommended unless advised by CloudOpt Support)."
     message "-r|--reposonly      Only install the software repositories."
     message "-s|--support        Collect diagnostic information in a file for CloudOpt support if this script failed."
+    message "-t|--tarball        Use a package archive created with --manifest for local installation."
     message "-u|--remove         Remove CloudOptimizer but leave all cache and configuration files."
     message "-y|--yes            Bypass most prompts, answering yes (for automated installation)."
     message "-x|--purge          Remove CloudOptimizer and delete everything that is not removed by the package manager."
@@ -308,12 +326,116 @@ remove_yum() {
 }
 
 install_rpm() {
-    message "Installing cloudoptimizer-tools package" action
-    rpm -Uvh $repopath/$tpkg && message "OK" status || die "Could not install Cloudoptimizer Tools! Exiting."
-    message "Installing cloudoptimizer package" action
-    rpm -Uvh $repopath/$mpkg && message "OK" status || die "Could not install Cloudoptimizer! Exiting."
-    message "Installing cloudoptimizer-webui package" action
-    rpm -Uvh $repopath/$wpkg && message "OK" status || die "Could not install Cloudoptimizer WebUI! Exiting."
+    if [ "$manifest" == "1" ]; then
+        averb="Obtaining"
+    else
+        averb="Installing"
+    fi
+    if [ "$local" == "1" ]; then
+        if [ "$manifest" == "1" ]; then
+            echo "wget $libnet_pkg" >>$dl_script
+            echo "tar -rf cloudoptimizer-packages.tar `basename $libnet_pkg`" >>$dl_script
+        else
+            download $rundir/`basename $libnet_pkg`
+        fi
+        message "$averb libnet package" action
+        rpm -q libnet >>$log 2>&1 || rpm -i $rundir/`basename $libnet_pkg` >>$log 2>&1 && message "OK" status || die "Could not install $libnet_pkg! Exiting."
+        if [ "$manifest" == "1" ]; then
+            echo "wget $libnet_devel_pkg" >>$dl_script
+            echo "tar -rf cloudoptimizer-packages.tar `basename $libnet_devel_pkg`" >>$dl_script
+        else
+            download $rundir/`basename $libnet_devel_pkg`
+        fi
+        message "$averb libnet_devel package" action
+        rpm -q libnet-devel >>$log 2>&1 || rpm -i $rundir/`basename $libnet_devel_pkg` >>$log 2>&1 && message "OK" status || die "Could not install $libnet_devel_pkg! Exiting."
+        if [ "$manifest" == "1" ]; then
+            echo "wget $libnfnetlink_pkg" >>$dl_script
+            echo "tar -rf cloudoptimizer-packages.tar `basename $libnfnetlink_pkg`" >>$dl_script
+        else
+            download $rundir/`basename $libnfnetlink_pkg`
+        fi
+        message "$averb libnfnetlink package" action
+        rpm -q libnfnetlink >>$log 2>&1 || rpm -i $rundir/`basename $libnfnetlink_pkg` >>$log 2>&1 && message "OK" status || die "Could not install $libnfnetlink_pkg! Exiting."
+        if [ "$manifest" == "1" ]; then
+            echo "wget $libnfnetlink_devel_pkg" >>$dl_script
+            echo "tar -rf cloudoptimizer-packages.tar `basename $libnfnetlink_devel_pkg`" >>$dl_script
+        else
+            download $rundir/`basename $libnfnetlink_devel_pkg`
+        fi
+        message "$averb libnfnetlink_devel package" action
+        rpm -q libnfnetlink-devel >>$log 2>&1 || rpm -i $rundir/`basename $libnfnetlink_devel_pkg` >>$log 2>&1 && message "OK" status || die "Could not install $libnfnetlink_devel_pkg! Exiting."
+        if [ "$manifest" == "1" ]; then
+            echo "wget $libnetfilter_pkg" >>$dl_script
+            echo "tar -rf cloudoptimizer-packages.tar `basename $libnetfilter_pkg`" >>$dl_script
+        else
+            download $rundir/`basename $libnetfilter_pkg`
+        fi
+        message "$averb libnetfilter package" action
+        rpm -q libnetfilter_queue >>$log 2>&1 || rpm -i $rundir/`basename $libnetfilter_pkg` >>$log 2>&1 && message "OK" status || die "Could not install $libnetfilter_pkg! Exiting."
+        if [ "$manifest" == "1" ]; then
+            echo "wget $libnetfilter_devel_pkg" >>$dl_script
+            echo "tar -rf cloudoptimizer-packages.tar `basename $libnetfilter_devel_pkg`" >>$dl_script
+        else
+            download $rundir/`basename $libnetfilter_devel_pkg`
+        fi
+        message "$averb libnetfilter_devel package" action
+        rpm -q libnetfilter_queue-devel >>$log 2>&1 || rpm -i $rundir/`basename $libnetfilter_devel_pkg` >>$log 2>&1 && message "OK" status || die "Could not install $libnetfilter_devel_pkg! Exiting."
+        if [ "$manifest" == "1" ]; then
+            echo "wget $netcat_pkg" >>$dl_script
+            echo "tar -rf cloudoptimizer-packages.tar `basename $netcat_pkg`" >>$dl_script
+        else
+            download $rundir/`basename $netcat_pkg`
+        fi
+        message "$averb nc package" action
+        rpm -q nc >>$log 2>&1 || rpm -i $rundir/`basename $netcat_pkg` >>$log 2>&1 && message "OK" status || die "Could not install $netcat_pkg! Exiting."
+        if [ "$manifest" == "1" ]; then
+            echo "wget $monit_pkg" >>$dl_script
+            echo "tar -rf cloudoptimizer-packages.tar `basename $monit_pkg`" >>$dl_script
+        else
+            download $rundir/`basename $monit_pkg`
+        fi
+        message "$averb monit package" action
+        rpm -q monit >>$log 2>&1 || rpm -i $rundir/`basename $monit_pkg` >>$log 2>&1 && message "OK" status || die "Could not install $monit_pkg! Exiting."
+        if [ "$manifest" == "1" ]; then
+            echo "wget $libctmalloc_pkg" >>$dl_script
+            echo "tar -rf cloudoptimizer-packages.tar `basename $libctmalloc_pkg`" >>$dl_script
+        else
+            download $rundir/`basename $libctmalloc_pkg`
+        fi
+        message "$averb libctmalloc package" action
+        rpm -q monit >>$log 2>&1 || rpm -i $rundir/`basename $libctmalloc_pkg` >>$log 2>&1 && message "OK" status || die "Could not install $libctmalloc_pkg! Exiting."
+        if [ "$manifest" == "1" ]; then
+            echo "wget $repopath/$tpkg" >>$dl_script
+            echo "tar -rf cloudoptimizer-packages.tar $tpkg" >>$dl_script
+        else
+            download $rundir/$tpkg
+        fi
+        message "$averb cloudoptimizer-tools package" action
+        rpm -q cloudoptimizer-tools >>$log 2>&1 || rpm -i $rundir/$tpkg >>$log 2>&1 && message "OK" status || die "Could not install Cloudoptimizer Tools ($tpkg)! Exiting."
+        if [ "$manifest" == "1" ]; then
+            echo "wget $repopath/$mpkg" >>$dl_script
+            echo "tar -rf cloudoptimizer-packages.tar $mpkg" >>$dl_script
+        else
+            download $rundir/$mpkg
+        fi
+        message "$averb cloudoptimizer package" action
+        rpm -q cloudoptimizer >>$log 2>&1 || rpm -i $rundir/$mpkg >>$log 2>&1 && message "OK" status || die "Could not install Cloudoptimizer ($mpkg)! Exiting."
+        if [ "$manifest" == "1" ]; then
+            echo "wget $repopath/$wpkg" >>$dl_script
+            echo "tar -rf cloudoptimizer-packages.tar $wpkg" >>$dl_script
+        else
+            download $rundir/$wpkg
+        fi
+        message "$averb cloudoptimizer-webui package" action
+        rpm -q cloudoptimizer-webui >>$log 2>&1 || rpm -i $rundir/$wpkg >>$log 2>&1 && message "OK" status || die "Could not install Cloudoptimizer WebUI ($wpkg)! Exiting."
+    else
+        message "Installing cloudoptimizer-tools package" action
+        rpm -Uvh $repopath/$tpkg && message "OK" status || die "Could not install Cloudoptimizer Tools! Exiting."
+        message "Installing cloudoptimizer package" action
+        rpm -Uvh $repopath/$mpkg && message "OK" status || die "Could not install Cloudoptimizer! Exiting."
+        message "Installing cloudoptimizer-webui package" action
+        rpm -Uvh $repopath/$wpkg && message "OK" status || die "Could not install Cloudoptimizer WebUI! Exiting."
+    fi
 }
 
 install_gdebi() {
@@ -398,6 +520,9 @@ force=0
 previous=0
 remove=0
 purge=0
+local=0
+manifest=0
+tarball=0
 
 while [ "$1" != "" ]; do
     case $1 in
@@ -439,9 +564,32 @@ while [ "$1" != "" ]; do
         --remove|-u)
             remove=1
         ;;
+        --manifest|-m)
+            noupdate=1
+            local=1
+            manifest=1
+            dl_script="$rundir/cloudoptimizer-download.sh"
+            echo "#!/bin/sh" >$dl_script
+            echo "tar -c -T /dev/null -f cloudoptimizer-packages.tar" >>$dl_script
+        ;;
         --purge|-x)
             remove=1
             purge=1
+        ;;
+        --local|-l)
+            noupdate=1
+            local=1
+        ;;
+        --tarball|-t)
+            tarball=1
+            if [ -f "$rundir/cloudoptimizer-packages.tar.gz" ]; then
+                noupdate=1
+                local=1
+                message "Removing packages from archive" action
+                tar -xzf $rundir/cloudoptimizer-packages.tar.gz -C $rundir >>$log 2>&1 && message "OK" status || die "Could not open archive."
+            else
+                die "Didn't find cloudoptimizer-packages.tar.gz in $rundir"
+            fi
         ;;
         --support|-s)
             tar -cz $TMPDIR/.cloudopt-* $log > $TMPDIR/co-support.tgz \
@@ -456,9 +604,9 @@ while [ "$1" != "" ]; do
 done
 
 # Check to make sure installer is up to date
-download "http://kb.cloudopt.com/instver.txt" silent
-instver=`cat instver.txt`
 if [ $noupdate != 1 ]; then
+    download "http://kb.cloudopt.com/instver.txt" silent
+    instver=`cat instver.txt`
     if [ $instver != $INSTALLER_VERSION ]; then
       message "This installer is out of date." error
       die "Please download a new copy at http://kb.cloudopt.com/cloudoptimizer-install.sh.gz or run again with --noupdate."
@@ -555,6 +703,15 @@ case $distro in
                         supports_ver=$CLOUDOPTIMIZER_CURRENT_VERSION
                         cver=$CLOUDOPTIMIZER_RPM5_64_LABEL
                     fi
+                    libnet_pkg=$LIBNET_RPM5_64
+                    libnet_devel_pkg=$LIBNET_DEVEL_RPM5_64
+                    libnetfilter_pkg=$LIBNETFILTER_QUEUE_RPM5_64
+                    libnetfilter_devel_pkg=$LIBNETFILTER_QUEUE_SO_1_RPM5_64
+                    libnfnetlink_pkg=$LIBNFNETLINK_RPM5_64
+                    libnfnetlink_devel_pkg=$LIBNFNETLINK_SO_0_RPM5_64
+                    netcat_pkg=$NC_RPM5_64
+                    monit_pkg=$MONIT_5_1_1_RPM6_64
+                    libctmalloc_pkg=$GPERFTOOLS_LIBS_RPM5_64
                 elif [ "$arch" = "i386" ]; then
                     is_supported=0
                     supports_ver="1.1.5"
@@ -578,6 +735,15 @@ case $distro in
                         supports_ver=$CLOUDOPTIMIZER_CURRENT_VERSION
                         cver=$CLOUDOPTIMIZER_RPM6_64_LABEL
                     fi
+                    libnet_pkg=$LIBNET_RPM6_64
+                    libnet_devel_pkg=$LIBNET_DEVEL_RPM6_64
+                    libnetfilter_pkg=$LIBNETFILTER_QUEUE_RPM6_64
+                    libnetfilter_devel_pkg=$LIBNETFILTER_QUEUE_SO_1_RPM6_64
+                    libnfnetlink_pkg=$LIBNFNETLINK_RPM6_64
+                    libnfnetlink_devel_pkg=$LIBNFNETLINK_SO_0_RPM6_64
+                    netcat_pkg=$NC_RPM6_64
+                    monit_pkg=$MONIT_5_1_1_RPM6_64
+                    libctmalloc_pkg=$GPERFTOOLS_LIBS_RPM6_64
                 else
                     is_supported=0
                 fi
@@ -589,7 +755,7 @@ case $distro in
         esac
         mpkg="cloudoptimizer-${cver}.${arch}.rpm"
         wpkg="cloudoptimizer-webui-${cver}.${arch}.rpm"
-        tpkg="cloudoptimizer-tools_${cver}.${arch}.rpm"
+        tpkg="cloudoptimizer-tools-${cver}.${arch}.rpm"
     ;;
     Amazon)
         os_type="rhel"
@@ -621,7 +787,7 @@ case $distro in
         esac
         mpkg="cloudoptimizer-${cver}.${arch}.rpm"
         wpkg="cloudoptimizer-webui-${cver}.${arch}.rpm"
-        tpkg="cloudoptimizer-tools_${cver}.${arch}.rpm"
+        tpkg="cloudoptimizer-tools-${cver}.${arch}.rpm"
     ;;
     RedHatEnterpriseServer)
         os_type="rhel"
@@ -675,7 +841,7 @@ case $distro in
         esac
         mpkg="cloudoptimizer-${cver}.${arch}.rpm"
         wpkg="cloudoptimizer-webui-${cver}.${arch}.rpm"
-        tpkg="cloudoptimizer-tools_${cver}.${arch}.rpm"
+        tpkg="cloudoptimizer-tools-${cver}.${arch}.rpm"
     ;;
     Debian)
         os_type="ubuntu"
@@ -737,7 +903,7 @@ else
 fi
 
 # Determine if CloudOptimizer is running
-if [ "$installed" == "1" ]; then
+if [ "$installed" == "1" ] && [ "$manifest" == "0" ]; then
     ps aux |grep "/usr/bin/cloudoptimizer" |grep -v "grep" >>$log 2>&1 && running=1 || running=0
     command -v cloudconfig >>$log 2>&1 && co_version=`service cloudoptimizer show-version |cut -d- -f1` || co_version="unknown"
     if [ "$running" == "1" ]; then
@@ -754,7 +920,7 @@ if [ "$installed" == "1" ]; then
 fi
 
 # Remove CloudOptimizer
-if [ "$remove" == "1" ]; then
+if [ "$remove" == "1" ] && [ "$manifest" == "0" ]; then
     if [ "$os_type" == "ubuntu" ]; then
         remove_apt
     else
@@ -764,7 +930,7 @@ if [ "$remove" == "1" ]; then
 fi
 
 # If installed, back up the existing configuration
-if [ "$installed" == "1" ]; then
+if [ "$installed" == "1" ] && [ "$manifest" == "0" ]; then
     datestamp=`date +%y%m%d%H%M`
     message "There is an existing CloudOptimizer installation.  Backing up the configuration to:"
     message "/etc/cloudoptimizer/cloudoptimizer.conf.installer.$datestamp" action
@@ -782,7 +948,7 @@ fi
 
 # Check to see if this is a downgrade
 
-if [ "$installed" == "1" ] && [ $co_version != "unknown" ]; then
+if [ "$installed" == "1" ] && [ "$co_version" != "unknown" ] && [ "$manifest" == "0" ]; then
     rver_d1=`echo "$co_version" |cut -d. -f1`
     rver_d2=`echo "$co_version" |cut -d. -f2`
     rver_d3=`echo "$co_version" |cut -d. -f3`
@@ -830,10 +996,15 @@ if [ "$accepteula" = 1 ]; then
         die "ERROR: Could not write to ${eula_file}.  Exiting.."
     fi
 else
-    message "We will now display the CloudOptimizer End User License Agreement."
-    sleep 5
-    download "http://kb.cloudopt.com/eula.txt"
-    more eula.txt
+    if [ "$local" == "1" ]; then
+        message "Please go read the CloudOptimizer End User License Agreement at the following URL:" title
+        message "http://kb.cloudopt.com/index.php/CloudOptimizer_End_User_License_Agreement"
+    else
+        message "We will now display the CloudOptimizer End User License Agreement."
+        sleep 5
+        download "http://kb.cloudopt.com/eula.txt"
+        more eula.txt
+    fi
     message "Do you accept the terms of the CloudOptimizer End User License Agreement? " prompt
     if ! yesno
         then die "You must accept the EULA.  Install cancelled."
@@ -857,124 +1028,176 @@ else
 fi
 
 # Check for existing cloudopt repositories
-if [ $os_type == "rhel" ]; then
-    repodir="/etc/yum.repos.d"
-elif [ $os_type == "ubuntu" ]; then
-    repodir="/etc/apt/sources.list.d"
-fi
-existing_repos=(`find $repodir | egrep [Cc]loud[Oo]pt`)
-if [ ${#existing_repos[@]} != "0" ]; then
-    message "Existing repo files found in $repodir.  These will be removed by the installer script." warning
-    message " Continue? (y/n) " prompt
-    if ! yesno
-    then die "Install cancelled."
-    fi
-    for existing_repo in ${existing_repos[@]}; do
-        if [ "$installed" = "1" ]; then
-            repo_file=`basename ${existing_repo}`
-            message "Backing up previous repo $repo_file to /etc/cloudoptimizer/$repo_file.installer.$datestamp" action 
-            cp ${existing_repo} /etc/cloudoptimizer/$repo_file.installer.$datestamp && message "OK" status
-        fi
-        message "Removing old repo" action 
-        rm ${existing_repo} && message "OK" status || die "Could not remove ${existing_repo}, exiting."
-    done
+if [ "$local" == "0" ]; then
     if [ $os_type == "rhel" ]; then
-        message "Clearing yum caches" action
-        rm -rf /var/cache/yum/$arch/$majorver/CloudOpt* && yum clean all >>$log && message "OK" status
+        repodir="/etc/yum.repos.d"
+    elif [ $os_type == "ubuntu" ]; then
+        repodir="/etc/apt/sources.list.d"
     fi
-fi
-
-if [ $os_type == "rhel" ]; then
-    if [ $testing = 1 ]; then
-        repo="http://kb.cloudopt.com"
-    else
-        repo="http://yum.cloudopt.com"
-    fi
-
-    # Set EPEL version for Amazon Linux
-    if [ $majorver = "2012" ]; then
-        os_version=6
-    fi
-
-    # EPEL check
-    message "Checking for EPEL repository" action
-    rpm --quiet -q epel-release >>$log 2&>1
-    if [ "$?" != "0" ]; then
-        message "The Extra Packages for Enterprise Linux repository is not installed on your machine. This is required to provide dependencies for CloudOptimizer." warning
-        message " Would you like us to install it now? (y/n) " prompt
+    existing_repos=(`find $repodir | egrep [Cc]loud[Oo]pt`)
+    if [ ${#existing_repos[@]} != "0" ]; then
+        message "Existing repo files found in $repodir.  These will be removed by the installer script." warning
+        message " Continue? (y/n) " prompt
         if ! yesno
-        then die "We require EPEL for installation.  Exiting."
+            then die "Install cancelled."
         fi
-        download "$installer_lib/epel-release-$os_version.noarch.rpm"
-        message "Installing EPEL rpm" action
-        yum -y localinstall ${tempdir}/epel-release-$os_version.noarch.rpm >>$log 2&>1 && message "OK" status || die "Could not install EPEL repo!  Exiting."
-        rpm --quiet -q epel-release || die "Failed to install EPEL!  Exiting."
+        for existing_repo in ${existing_repos[@]}; do
+            if [ "$installed" = "1" ]; then
+                repo_file=`basename ${existing_repo}`
+                message "Backing up previous repo $repo_file to /etc/cloudoptimizer/$repo_file.installer.$datestamp" action 
+                cp ${existing_repo} /etc/cloudoptimizer/$repo_file.installer.$datestamp && message "OK" status
+            fi
+            message "Removing old repo" action 
+            rm ${existing_repo} && message "OK" status || die "Could not remove ${existing_repo}, exiting."
+        done
+        if [ $os_type == "rhel" ]; then
+            message "Clearing yum caches" action
+            rm -rf /var/cache/yum/$arch/$majorver/CloudOpt* && yum clean all >>$log && message "OK" status
+        fi
     fi
 
-    # Install repo key
-    download $repo/RPM-GPG-KEY-cloudopt.com
-    message "Installing CentOS signing key" action
-    rpm --import $tempdir/RPM-GPG-KEY-cloudopt.com  && message "OK" status || die "Could not import Cloudopt RPM GPG key! Exiting."
-    
-    # Install repo file
-    download $repo/repo/Cloudopt-$yumrepotype.$os_version.repo
-    message "Installing CentOS repository settings" action
-    cp $tempdir/Cloudopt-$yumrepotype.$os_version.repo /etc/yum.repos.d/ && message "OK" status || die "Could not copy repo file to '/etc/yum.repos.d/' ! Exiting."
+    if [ $os_type == "rhel" ]; then
+        if [ $testing = 1 ]; then
+            repo="http://kb.cloudopt.com"
+        else
+            repo="http://yum.cloudopt.com"
+        fi
 
-elif [ $os_type == "ubuntu" ] && [ $distro != "Debian" ]; then
-    repo="http://apt.cloudopt.com"
-    download $repo/keys/cloudopt-release-ubuntu.key
-    message "Importing Ubuntu signing key" action
-    apt-key add $tempdir/cloudopt-release-ubuntu.key >>$log 2&>1 && message "OK" status || die "Could not import Cloudopt APT GPG key! Exiting."
-    download $repo/repo/cloudopt-$aptrepotype.`lsb_release -cs`.list
-    message "Installing Ubuntu repository settings" action
-    cp $tempdir/cloudopt-$aptrepotype.`lsb_release -cs`.list /etc/apt/sources.list.d/ && message "OK" status || die "Could not copy repo file to '/etc/apt/sources.list.d/' ! Exiting."
-    message "Updating APT package index (this may take a while)" action
-    apt-get -qq update && message "OK" status || die "Could not update repository data! Exiting."
+        # Set EPEL version for Amazon Linux
+        if [ $majorver = "2012" ]; then
+            os_version=6
+        fi
+
+        # EPEL check
+        message "Checking for EPEL repository" action
+        rpm --quiet -q epel-release >>$log 2&>1
+        if [ "$?" != "0" ]; then
+            message "The Extra Packages for Enterprise Linux repository is not installed on your machine. This is required to provide dependencies for CloudOptimizer." warning
+            message " Would you like us to install it now? (y/n) " prompt
+            if ! yesno
+                then die "We require EPEL for installation.  Exiting."
+            fi
+            download "$installer_lib/epel-release-$os_version.noarch.rpm"
+            message "Installing EPEL rpm" action
+            yum -y localinstall ${tempdir}/epel-release-$os_version.noarch.rpm >>$log 2&>1 && message "OK" status || die "Could not install EPEL repo!  Exiting."
+            rpm --quiet -q epel-release || die "Failed to install EPEL!  Exiting."
+        fi
+
+        # Install repo key
+        download $repo/RPM-GPG-KEY-cloudopt.com
+        message "Installing CentOS signing key" action
+        rpm --import $tempdir/RPM-GPG-KEY-cloudopt.com  && message "OK" status || die "Could not import Cloudopt RPM GPG key! Exiting."
+    
+        # Install repo file
+        download $repo/repo/Cloudopt-$yumrepotype.$os_version.repo
+        message "Installing CentOS repository settings" action
+        cp $tempdir/Cloudopt-$yumrepotype.$os_version.repo /etc/yum.repos.d/ && message "OK" status || die "Could not copy repo file to '/etc/yum.repos.d/' ! Exiting."
+
+    elif [ $os_type == "ubuntu" ] && [ $distro != "Debian" ]; then
+        repo="http://apt.cloudopt.com"
+        download $repo/keys/cloudopt-release-ubuntu.key
+        message "Importing Ubuntu signing key" action
+        apt-key add $tempdir/cloudopt-release-ubuntu.key >>$log 2&>1 && message "OK" status || die "Could not import Cloudopt APT GPG key! Exiting."
+        download $repo/repo/cloudopt-$aptrepotype.`lsb_release -cs`.list
+        message "Installing Ubuntu repository settings" action
+        cp $tempdir/cloudopt-$aptrepotype.`lsb_release -cs`.list /etc/apt/sources.list.d/ && message "OK" status || die "Could not copy repo file to '/etc/apt/sources.list.d/' ! Exiting."
+        message "Updating APT package index (this may take a while)" action
+        apt-get -qq update && message "OK" status || die "Could not update repository data! Exiting."
+    fi
 fi
 
-if [ $reposonly = 0 ]; then
-    message "Installing CloudOptimizer"      
+if [ "$reposonly" == "0" ]; then
+    message "Installing CloudOptimizer"
+    if [ "$manifest" == "1" ]; then
+        message "Creating download script."
+    elif [ "$local" == "1" ]; then
+        message "Attempting a local install." warning
+        rpmflags="-i"
+    else
+        rpmflags="-Uvh"
+    fi
     if [ $os_type == "rhel" ]; then
-        if [ "$installed" == "1" ] || [ "$downgrade" == "1" ]; then
+        if [ "$manifest" == "0" ] && [ "$installed" == "1" ] || [ "$downgrade" == "1" ]; then
             message "We must remove the previous version before installing with yum." warning
             remove_yum
         fi
-        message "Installing dependencies"
-        if [ $distro = "RedHatEnterpriseServer" ]; then
-            rpm -q xfsprogs >>$log 2>&1 && xfsprogs=1 || xfsprogs=0
-            if [ "$xfsprogs" = "0" ]; then
-                message "Installing xfsprogs" action
-                if [ $majorver = "5" ]; then
-                    rpm -Uvh $XFSPROGS_RPM5_64 >>$log 2>&1 && message "OK" status || die "Could not install xfsprogs!  Exiting."
-                elif [ $majorver = "6" ]; then
-                    rpm -Uvh $XFSPROGS_RPM6_64 >>$log 2>&1 && message "OK" status || die "Could not install xfsprogs!  Exiting."
+        if [ "$local" == "1" ]; then
+            message "Installing dependencies locally"
+            if [ $distro = "RedHatEnterpriseServer" ]; then
+                rpm -q xfsprogs >>$log 2>&1 && xfsprogs=1 || xfsprogs=0
+                if [ "$xfsprogs" = "0" ]; then
+                    message "Installing xfsprogs" action
+                    if [ $majorver = "5" ]; then
+                        download `basename $XFSPROGS_RPM5_64`
+                        rpm $rpmflags `basename $XFSPROGS_RPM5_64` >>$log 2>&1 && message "OK" status || die "Could not install xfsprogs!  Exiting."
+                    elif [ $majorver = "6" ]; then
+                        download basename`$XFSPROGS_RPM6_64`
+                        rpm $rpmflags `basename $XFSPROGS_RPM6_64` >>$log 2>&1 && message "OK" status || die "Could not install xfsprogs!  Exiting."
+                    fi
+                fi
+            fi
+            if [ $distro = "Amazon" ]; then
+                rpm -q monit >>$log 2>&1 && monit=1 || monit=0
+                if [ "$monit" = "0" ]; then
+                    message "Installing monit" action
+                    download `basename $MONIT_5_1_1_RPM6_64`
+                    rpm $rpmflags `basename $MONIT_5_1_1_RPM6_64` >>$log 2>&1 && message "OK" status || die "Could not install monit!  Exiting."
+                fi
+            fi
+            if [ $majorver = "5" ]; then
+                rpm -q collectd >>$log 2>&1 && collectd=1 || collectd=0
+                if [ "$collectd" = "0" ]; then
+                    message "Installing collectd" action
+                    download `basename $COLLECTD_4_10_3_RPM5_64`
+                    rpm $rpmflags `basename $COLLECTD_4_10_3_RPM5_64` >>$log 2>&1 && message "OK" status || die "Could not install collectd!  Exiting."
+                fi
+            fi
+        else
+            message "Downloading and installing dependencies"
+            if [ $distro = "RedHatEnterpriseServer" ]; then
+                rpm -q xfsprogs >>$log 2>&1 && xfsprogs=1 || xfsprogs=0
+                if [ "$xfsprogs" = "0" ]; then
+                    message "Installing xfsprogs" action
+                    if [ $majorver = "5" ]; then
+                        rpm $rpmflags $XFSPROGS_RPM5_64 >>$log 2>&1 && message "OK" status || die "Could not install xfsprogs!  Exiting."
+                    elif [ $majorver = "6" ]; then
+                        rpm $rpmflags $XFSPROGS_RPM6_64 >>$log 2>&1 && message "OK" status || die "Could not install xfsprogs!  Exiting."
+                    fi
+                fi
+            fi
+            if [ $distro = "Amazon" ]; then
+                rpm -q monit >>$log 2>&1 && monit=1 || monit=0
+                if [ "$monit" = "0" ]; then
+                    message "Installing monit" action
+                    rpm $rpmflags $MONIT_5_1_1_RPM6_64 >>$log 2>&1 && message "OK" status || die "Could not install monit!  Exiting."
+                fi
+            fi
+            if [ $majorver = "5" ]; then
+                rpm -q collectd >>$log 2>&1 && collectd=1 || collectd=0
+                if [ "$collectd" = "0" ]; then
+                    message "Installing collectd" action
+                    rpm $rpmflags $COLLECTD_4_10_3_RPM5_64 >>$log 2>&1 && message "OK" status || die "Could not install collectd!  Exiting."
                 fi
             fi
         fi
-        if [ $distro = "Amazon" ]; then
-            rpm -q monit >>$log 2>&1 && monit=1 || monit=0
-            if [ "$monit" = "0" ]; then
-                message "Installing monit" action
-                rpm -Uvh $MONIT_5_1_1_RPM6_64 >>$log 2>&1 && message "OK" status || die "Could not install monit!  Exiting."
-            fi
-        fi
-        if [ $majorver = "5" ]; then
-            rpm -q collectd >>$log 2>&1 && collectd=1 || collectd=0
-            if [ "$collectd" = "0" ]; then
-                message "Installing collectd" action
-                rpm -Uvh $COLLECTD_4_10_3_RPM5_64 >>$log 2>&1 && message "OK" status || die "Could not install collectd!  Exiting."
-            fi
-        fi
         if [ $arch = "x86_64" ]; then
-            install_yum
+            if [ $majorver = "5" ]; then
+                repopath="http://yum.cloudopt.com/CentOS/x86_64"
+            else
+                repopath="http://yum.cloudopt.com/CentOS-6/x86_64"
+            fi
+            if [ "$local" == "1" ]; then
+                install_rpm
+            else
+                install_yum
+            fi
         elif [ $arch = "i386" ]; then
             repopath="http://yum.cloudopt.com/CentOS/i386"
             yum install python26
-            rpm -Uvh $LIBNETFILTER_QUEUE_RPM5_32
-            rpm -Uvh $LIBNETFILTER_QUEUE_SO_1_RPM5_32
-            rpm -Uvh $LIBNFNETLINK_SO_0_RPM5_32
-            rpm -Uvh $MONIT_5_1_1_RPM6_64
+            rpm $rpmflags $LIBNETFILTER_QUEUE_RPM5_32
+            rpm $rpmflags $LIBNETFILTER_QUEUE_SO_1_RPM5_32
+            rpm $rpmflags $LIBNFNETLINK_SO_0_RPM5_32
+            rpm $rpmflags $MONIT_5_1_1_RPM6_64
             install_rpm
         fi
     elif [ $os_type == "ubuntu" ]; then
@@ -986,9 +1209,18 @@ if [ $reposonly = 0 ]; then
             if [ $arch = "x86_64" ]; then
                 if [ "$previous" == "1" ]; then
                     repopath="http://apt.cloudopt.com/ubuntu/pool/main/c/cloudoptimizer"
-                    install_gdebi
+                    if [ "$local" == "1" ]; then
+                        install_dpkg
+                    else
+                        install_gdebi
+                    fi
                 else
-                    install_apt
+                    repopath="http://apt.cloudopt.com/ubuntu/pool/main/c/cloudoptimizer"
+                    if [ "$local" == "1" ]; then
+                        install_dpkg
+                    else
+                        install_apt
+                    fi
                 fi
             elif [ $arch = "i386" ]; then
                 repopath="http://apt.cloudopt.com/ubuntu/pool/main/c/cloudoptimizer"
@@ -1002,8 +1234,23 @@ if [ $reposonly = 0 ]; then
 fi
 
 echo
-if [ $reposonly = 1 ]; then
+if [ "$reposonly" == "1" ]; then
     message "CloudOpt repos have been successfully installed." title
+elif [ "$tarball" == "1" ]; then
+    message "Cloudoptimizer has been successfully installed." title
+    message "Cleaning up..."
+    for file in `tar -ztf $rundir/cloudoptimizer-packages.tar.gz`; do
+        rm -f $rundir/$file
+    done
+elif [ "$manifest" == "1" ]; then
+    echo "gzip cloudoptimizer-packages.tar" >>$dl_script
+    echo "echo \"Created cloudoptimizer-packages.tar.gz.\"" >>$dl_script
+    echo "echo \"Transfer this file to the system on which you want to install CloudOptimizer,\"" >>$dl_script
+    echo "echo \"into the same directory as the installer.\"" >>$dl_script
+    message "Download script created: $dl_script" title
+    message "Transfer this script to a machine that is connected to the Internet and run it, using the following syntax:"
+    message " bash cloudoptimizer-download.sh"
+    message "It will download the necessary packages to a tar file, which you must then transfer to this system."
 else
     message "Cloudoptimizer has been successfully installed." title
 fi
