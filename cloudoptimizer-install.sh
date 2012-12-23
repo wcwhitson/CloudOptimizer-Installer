@@ -178,21 +178,21 @@ download() {
 }
 
 showhelp() {
-    message "-a|--auto           Automatic installation: the same as using --accept-eula, --yes, --force, and --noupdate."
-    message "-c|--check          Check to see if installation is possible, but don't install any files."
-    message "-e|--accept-eula    Accept the CloudOptimizer end user license agreement (for automated installation)."
-    message "-f|--force          A stronger --yes, will bypass prompts for actions that may be destructive (for automated installation)."
-    message "-h|--help           Show this help screen."
-    message "-l|--local          Perform an install without connection to the Internet.  Package files must be located in the same directory as the script."
-    message "-m|--manifest       Generate a script that will download all the required packages on another system (for local install.)"
-    message "-n|--noupdate       Don't check for a more recent version of the installer (recommended for automated installation)."
-    message "-p|--previous       Install the previous version (not recommended unless advised by CloudOpt Support)."
-    message "-r|--reposonly      Only install the software repositories."
-    message "-s|--support        Collect diagnostic information in a file for CloudOpt support if this script failed."
-    message "-t|--tarball        Use a package archive created with --manifest for local installation."
-    message "-u|--remove         Remove CloudOptimizer but leave all cache and configuration files."
-    message "-y|--yes            Bypass most prompts, answering yes (for automated installation)."
-    message "-x|--purge          Remove CloudOptimizer and delete everything that is not removed by the package manager."
+    message "-a|--auto           Automatic installation: the same as using --accept-eula, --yes, --force, and --noupdate." nolog
+    message "-c|--check          Check to see if installation is possible, but don't install any files." nolog
+    message "-e|--accept-eula    Accept the CloudOptimizer end user license agreement (for automated installation)." nolog
+    message "-f|--force          A stronger --yes, will bypass prompts for actions that may be destructive (for automated installation)." nolog
+    message "-h|--help           Show this help screen." nolog
+    message "-l|--local          Perform an install without connection to the Internet.  Package files must be located in the same directory as the script." nolog
+    message "-m|--manifest       Generate a script that will download all the required packages on another system (for local install.)" nolog
+    message "-n|--noupdate       Don't check for a more recent version of the installer (recommended for automated installation)." nolog
+    message "-p|--previous       Install the previous version (not recommended unless advised by CloudOpt Support)." nolog
+    message "-r|--reposonly      Only install the software repositories." nolog
+    message "-s|--support        Collect diagnostic information in a file for CloudOpt support if this script failed." nolog
+    message "-t|--tarball        Use a package archive created with --manifest for local installation." nolog
+    message "-u|--remove         Remove CloudOptimizer but leave all cache and configuration files." nolog
+    message "-y|--yes            Bypass most prompts, answering yes (for automated installation)." nolog
+    message "-x|--purge          Remove CloudOptimizer and delete everything that is not removed by the package manager." nolog
 }
 
 # message()
@@ -247,7 +247,9 @@ message() {
         line_num=`expr $line_num + 1`
     done 
     datestamp=`date +%y%m%d%H%M`
-    echo "$datestamp - ${1}" >>$log
+    if [ "$2" != "nolog" ]; then
+        echo "$datestamp - ${1}" >>$log
+    fi
 }
 
 install_apt() {
@@ -596,7 +598,9 @@ while [ "$1" != "" ]; do
             exit 0
         ;;
         *)
-            die "Unrecognized flag."
+            message "Unrecognized flag."
+            show help
+            exit 0
         ;;
     esac
     shift
