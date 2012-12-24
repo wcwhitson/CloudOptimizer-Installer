@@ -689,15 +689,15 @@ case $distro in
                     is_supported=0
                 fi
             ;;
-            *)
-                is_supported=0
-            ;;
             10.10)
                 die "CloudOpt has tested Ubuntu version 10.10 and determined that CloudOptimizer cannot be installed successfully at this time."
             ;;
             13.04)
                 die "CloudOpt has tested Ubuntu 13.03 and determined that CloudOptimizer cannot be installed successfully at this time.  We are working it."
             ;; 
+            *)
+                is_supported=0
+            ;;
         esac
         mpkg="cloudoptimizer_${cver}_${parch}.deb"
         wpkg="cloudoptimizer-webui_${cver}_${parch}.deb"
