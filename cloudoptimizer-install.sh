@@ -10,7 +10,7 @@
 # Constants #
 #############
 
-INSTALLER_VERSION="1.17"
+INSTALLER_VERSION="1.18"
 
 CLOUDOPTIMIZER_PREVIOUS_VERSION="1.2.1"
 CLOUDOPTIMIZER_CURRENT_VERSION="1.3.0"
@@ -232,8 +232,12 @@ message() {
             echo -e "\e[7mERROR:\e[27m ${1}" |cut -c $from_cut-$to_cut
         elif [ "$2" == "warning" ]; then
             echo -e "\e[7mWarning:\e[27m ${1}" |cut -c $from_cut-$to_cut
-        elif [ "$2" == "prompt" ]; then
+        elif [ "$2" == "prompt" ] && [ "$3" != "force" ]; then
             if [ "$skipyesno" == "0" ]; then
+                echo -n -e "\033[1m${1}\033[0m" |cut -c $from_cut-$to_cut |tr -d '\n'
+            fi
+        elif [ "$2" == "prompt" ] && [ "$3" == "force" ]; then
+            if [ "$force" == "0" ]; then
                 echo -n -e "\033[1m${1}\033[0m" |cut -c $from_cut-$to_cut |tr -d '\n'
             fi
         elif [ "$2" == "action" ]; then
@@ -271,18 +275,18 @@ remove_apt() {
     if [ "$purge" == "1" ]; then
         action="purge"
         message "Purging will remove files that you have changed since installation." warning
-        message " Proceed? (y/n) " prompt
+        message " Proceed? (y/n) " prompt force
         if !  yesno force
             then die "Install cancelled."
         fi
-        command -v cloudconfig && homedir=`cloudconfig get /config/home` || message "Couldn't determine home directory.  Continuing anyway.  You might need to do some manual cleanup." warning
-        command -v cloudconfig && logdir=`cloudconfig get /config/log_dir` || message "Couldn't determine log directory.  Continuing anyway.  You might need to do some manual cleanup." warning
+        command -v cloudconfig >>$log 2>&1 && homedir=`cloudconfig get /config/home` || message "Couldn't determine home directory.  Continuing anyway.  You might need to do some manual cleanup." warning
+        command -v cloudconfig >>$log 2>&1 && logdir=`cloudconfig get /config/log_dir` || message "Couldn't determine log directory.  Continuing anyway.  You might need to do some manual cleanup." warning
         message "Removing cloudoptimizer-webui" action
-        apt-get -qqy $action cloudoptimizer-webui >>$log && message "OK" status || message "Could not remove CloudOptimizer WebUI! You might need to do some manual cleanup." warning
+        apt-get -qqy $action --auto-remove cloudoptimizer-webui >>$log && message "OK" status || message "Could not remove CloudOptimizer WebUI! You might need to do some manual cleanup." warning
         message "Removing cloudoptimizer" action
-        apt-get -qqy $action cloudoptimizer >>$log 2>&1 && message "OK" status || message "Could not remove CloudOptimizer! You might need to do some manual cleanup." warning
+        apt-get -qqy $action --auto-remove cloudoptimizer >>$log 2>&1 && message "OK" status || message "Could not remove CloudOptimizer! You might need to do some manual cleanup." warning
         message "Removing cloudoptimizer-tools" action
-        apt-get -qqy $action cloudoptimizer-tools >>$log 2>&1 && message "OK" status || message "Could not remove CloudOptimizer Tools! You might need to do some manual cleanup." warning
+        apt-get -qqy $action --auto-remove cloudoptimizer-tools >>$log 2>&1 && message "OK" status || message "Could not remove CloudOptimizer Tools! You might need to do some manual cleanup." warning
         message "Removing CloudOptimizer home directory" action
         rm -rf $homedir && message "OK" status || message "Couldn't remove home directory.  You might need to do some manual cleanup." warning
         message "Removing /etc/cloudoptimizer" action
@@ -303,11 +307,10 @@ remove_apt() {
         done
     else
         message "Removing cloudoptimizer-webui" action
-        apt-get -qqy $action cloudoptimizer-webui >>$log && message "OK" status || message "Could not remove CloudOptimizer WebUI! You might need to do some manual cleanup." warning
         message "Removing cloudoptimizer" action
-        apt-get -qqy $action cloudoptimizer >>$log 2>&1 && message "OK" status || message "Could not remove CloudOptimizer! You might need to do some manual cleanup." warning
+        apt-get -qqy $action --auto-remove cloudoptimizer >>$log 2>&1 && message "OK" status || message "Could not remove CloudOptimizer! You might need to do some manual cleanup." warning
         message "Removing cloudoptimizer-tools" action
-        apt-get -qqy $action cloudoptimizer-tools >>$log 2>&1 && message "OK" status || message "Could not remove CloudOptimizer Tools! You might need to do some manual cleanup." warning
+        apt-get -qqy $action --auto-remove cloudoptimizer-tools >>$log 2>&1 && message "OK" status || message "Could not remove CloudOptimizer Tools! You might need to do some manual cleanup." warning
     fi
 }
 
@@ -328,18 +331,18 @@ remove_yum() {
     message "Removing CloudOptimizer..."
     if [ "$purge" == "1" ]; then
         message "Purging will remove files that you have changed since installation." warning
-        message " Proceed? (y/n) " prompt
+        message " Proceed? (y/n) " prompt force
         if !  yesno force
             then die "Install cancelled."
         fi
-        command -v cloudconfig && homedir=`cloudconfig get /config/home` || message "Couldn't determine home directory.  Continuing anyway.  You might need to do some manual cleanup." warning
-        command -v cloudconfig && logdir=`cloudconfig get /config/log_dir` || message "Couldn't determine log directory.  Continuing anyway.  You might need to do some manual cleanup." warning
+        command -v cloudconfig >>$log 2>&1 && homedir=`cloudconfig get /config/home` || message "Couldn't determine home directory.  Continuing anyway.  You might need to do some manual cleanup." warning
+        command -v cloudconfig >>$log 2>&1 && logdir=`cloudconfig get /config/log_dir` || message "Couldn't determine log directory.  Continuing anyway.  You might need to do some manual cleanup." warning
         message "Removing cloudoptimizer-webui" action
-        yum -q -y remove cloudoptimizer-webui >>$log 2>&1 && message "OK" status || message "Could not remove CloudOptimizer WebUI! You might need to do some manual cleanup." warning
+        yum -q -y remove cloudoptimizer-webui -Ðsetopt=clean_requirements_on_remove=1 >>$log 2>&1 && message "OK" status || message "Could not remove CloudOptimizer WebUI! You might need to do some manual cleanup." warning
         message "Removing cloudoptimizer" action
-        yum -q -y remove cloudoptimizer >>$log 2>&1 && message "OK" status || message "Could not remove CloudOptimizer! You might need to do some manual cleanup." warning
+        yum -q -y remove cloudoptimizer Ð-setopt=clean_requirements_on_remove=1 >>$log 2>&1 && message "OK" status || message "Could not remove CloudOptimizer! You might need to do some manual cleanup." warning
         message "Removing cloudoptimizer-tools" action
-        yum -q -y remove cloudoptimizer-tools >>$log 2>&1 && message "OK" status || message "Could not remove CloudOptimizer Tools! You might need to do some manual cleanup." warning
+        yum -q -y remove cloudoptimizer-tools Ð-setopt=clean_requirements_on_remove=1 >>$log 2>&1 && message "OK" status || message "Could not remove CloudOptimizer Tools! You might need to do some manual cleanup." warning
         message "Removing CloudOptimizer home directory" action
         rm -rf $homedir && message "OK" status || message "Couldn't remove home directory.  You might need to do some manual cleanup." warning
         message "Removing /etc/cloudoptimizer" action
@@ -354,7 +357,7 @@ remove_yum() {
         rm -f /etc/init.d/cloudoptimizer* && message "OK" status || message "Couldn't remove init scripts.  You might need to do some manual cleanup." warning
         if [ "$distro" == "Mageia" ]; then
             repodir="/etc/yum/repos.d"
-        else
+        elsen
             repodir="/etc/yum.repos.d"
         fi
         existing_repos=(`find $repodir | egrep [Cc]loud[Oo]pt`)
@@ -366,11 +369,11 @@ remove_yum() {
         rm -rf /var/cache/yum/$arch/$majorver/CloudOpt* >>$log 2>&1 && yum clean all >>$log && message "OK" status || "Could not purge yum caches.  You might need to do some manual cleanup." warning
     else
         message "Removing cloudoptimizer-webui" action
-        yum -q -y remove cloudoptimizer-webui >>$log 2>&1 && message "OK" status || message "Could not remove CloudOptimizer WebUI! You might need to do some manual cleanup." warning
+        yum -q -y remove cloudoptimizer-webui Ð-setopt=clean_requirements_on_remove=1 >>$log 2>&1 && message "OK" status || message "Could not remove CloudOptimizer WebUI! You might need to do some manual cleanup." warning
         message "Removing cloudoptimizer" action
-        yum -q -y remove cloudoptimizer >>$log 2>&1 && message "OK" status || message "Could not remove CloudOptimizer! You might need to do some manual cleanup." warning
+        yum -q -y remove cloudoptimizer Ð-setopt=clean_requirements_on_remove=1 >>$log 2>&1 && message "OK" status || message "Could not remove CloudOptimizer! You might need to do some manual cleanup." warning
         message "Removing cloudoptimizer-tools" action
-        yum -q -y remove cloudoptimizer-tools >>$log 2>&1 && message "OK" message || die "Could not remove CloudOptimizer Tools! You might need to do some manual cleanup." warning
+        yum -q -y remove cloudoptimizer-tools Ð-setopt=clean_requirements_on_remove=1 >>$log 2>&1 && message "OK" message || die "Could not remove CloudOptimizer Tools! You might need to do some manual cleanup." warning
     fi
 }
 
@@ -446,11 +449,14 @@ install_gdebi() {
     fi
     if [ "$version" == "12.10" ] || [ "$version" == "13.04" ] || [ "$version" == "14" ]; then
         download $LIBTCMALLOC_MINIMAL0_DEB12_64
-        gdebi --n --q `basename $LIBTCMALLOC_MINIMAL0_DEB12_64`
+        message "Installing `basename $LIBTCMALLOC_MINIMAL0_DEB12_64`" action
+        gdebi --n --q `basename $LIBTCMALLOC_MINIMAL0_DEB12_64` >>$log 2>&1 && message "OK" status || die "Could not install `basename $LIBTCMALLOC_MINIMAL0_DEB12_64`!  Exiting."
         download $LIBUNWIND7_DEB12_64
-        gdebi --n --q `basename $LIBUNWIND7_DEB12_64`
+        message "Installing `basename $LIBUNWIND7_DEB12_64`" action
+        gdebi --n --q `basename $LIBUNWIND7_DEB12_64` >>$log 2>&1 && message "OK" status || die "Could not install `basename $LIBUNWIND7_DEB12_64`!  Exiting."
         download $LIBGOOGLE_PERFTOOLS0_DEB12_64
-        gdebi --n --q `basename $LIBGOOGLE_PERFTOOLS0_DEB12_64`
+        message "Installing `basename $LIBGOOGLE_PERFTOOLS0_DEB12_64`" action
+        gdebi --n --q `basename $LIBGOOGLE_PERFTOOLS0_DEB12_64` >>$log 2>&1 && message "OK" status || die "Could not install `basename $LIBGOOGLE_PERFTOOLS0_DEB12_64`!  Exiting."
     fi
     message "Downloading CloudOptimizer packages..."
     download $repopath/$tpkg && download $repopath/$mpkg && download $repopath/$wpkg
@@ -458,10 +464,8 @@ install_gdebi() {
     gdebi --n --q $tpkg >>$log 2>&1 && message "OK" status || die "Could not install Cloudoptimizer Tools! Exiting."
     message "Installing cloudoptimizer package" action
     gdebi --n --q $mpkg >>$log 2>&1 && message "OK" status || die "Could not install Cloudoptimizer! Exiting."
-    if [ "$version" != "12.10" ]; then
-        message "Installing cloudoptimizer-webui package" action
-        gdebi --n --q $wpkg >>$log 2>&1 && message "OK" status || die "Could not install Cloudoptimizer WebUI! Exiting."
-    fi
+    message "Installing cloudoptimizer-webui package" action
+    gdebi --n --q $wpkg >>$log 2>&1 && message "OK" status || die "Could not install Cloudoptimizer WebUI! Exiting."
 }
 
 
@@ -548,6 +552,7 @@ while [ "$1" != "" ]; do
             onlycheck=1
         ;;
         --force|-f)
+            skipyesno=1
             force=1
         ;;
         --yes|-y)
@@ -662,13 +667,13 @@ case $distro in
                 fi
             ;;
             12.04|12.10)
-                if [ "$version" == "12.10" ]; then
-                    message "The CloudOptimizer WebUI is not currently supported on this version of Linux." warning
-                    message " Continue with installation? (y/n) " prompt
-                    if ! yesno
-                        then die "Install cancelled."
-                    fi
-                fi
+                #if [ "$version" == "12.10" ]; then
+                    # message "The CloudOptimizer WebUI is not currently supported on this version of Linux." warning
+                    # message " Continue with installation? (y/n) " prompt
+                    #if ! yesno
+                    #    then die "Install cancelled."
+                    #fi
+                #fi
                 if [ "$arch" = "x86_64" ]; then
                     if [ "$testing" = "1" ]; then
                         is_supported=1
@@ -1125,7 +1130,7 @@ if [ "$installed" == "1" ] && [ "$manifest" == "0" ]; then
     command -v cloudconfig >>$log 2>&1 && co_version=`service cloudoptimizer show-version |cut -d- -f1` || co_version="unknown"
     if [ "$running" == "1" ]; then
         message "CloudOptimizer version $co_version is installed and running.  If you continue, service will be interrupted." warning
-        message " Continue? (y/n) " prompt
+        message " Continue? (y/n) " prompt force
         if !  yesno force
             then die "Install cancelled."
         fi
@@ -1175,21 +1180,21 @@ if [ "$installed" == "1" ] && [ "$co_version" != "unknown" ] && [ "$manifest" ==
     if [ "$rver_d1" -gt "$iver_d1" ]; then
         downgrade=1
         message "This is a downgrade from $co_version to $supports_ver." warning
-        message " Are you sure that you want to downgrade? " prompt
+        message " Are you sure that you want to downgrade? " prompt force
         if !  yesno force
             then die "Install cancelled."
         fi
     elif [ "$rver_d1" == "$iver_d1" ] && [ "$rver_d2" -gt "$iver_d2" ]; then
         downgrade=1
         message "This is a downgrade from $co_version to $supports_ver." warning
-        message " Are you sure that you want to downgrade? " prompt
+        message " Are you sure that you want to downgrade? " prompt force
         if !  yesno force
             then die "Install cancelled."
         fi
     elif [ "$rver_d1" == "$iver_d1" ] && [ "$rver_d2" == "$iver_d2" ] && [ "$rver_d3" -gt "$iver_d3" ]; then
         downgrade=1
         message "This is a downgrade from $co_version to $supports_ver." warning
-        message " Are you sure that you want to downgrade? " prompt
+        message " Are you sure that you want to downgrade? " prompt force
         if !  yesno force
             then die "Install cancelled."
         fi
@@ -1329,6 +1334,16 @@ if [ "$local" == "0" ]; then
             cp $tempdir/cloudopt-$aptrepotype.`lsb_release -cs`.list /etc/apt/sources.list.d/ && message "OK" status || die "Could not copy repo file to '/etc/apt/sources.list.d/' ! Exiting."
             message "Updating APT package index (this may take a while)" action
             apt-get -qq update && message "OK" status || die "Could not update repository data! Exiting."
+        elif [ "$version" == "12.10" ]; then
+            if [ ! -f /etc/apt/sources.list.d/ubuntu-quantal.list ]; then
+                download http://kb.cloudopt.com/ubuntu-quantal.list
+                cp ubuntu-quantal.list /etc/apt/sources.list.d/ || die "Couldn't install supplemental Ubuntu 12.10 repositories."
+            fi
+        fi
+    elif [ "$distro" == "LinuxMint" ] && [ "$version" == "14" ]; then
+        if [ ! -f /etc/apt/sources.list.d/ubuntu-quantal.list ]; then
+            download http://kb.cloudopt.com/ubuntu-quantal.list
+            cp ubuntu-quantal.list /etc/apt/sources.list.d/ || die "Couldn't install supplemental Ubuntu 12.10 repositories."
         fi
     fi
 fi
@@ -1407,29 +1422,33 @@ if [ "$reposonly" == "0" ]; then
             install_rpm
         fi
         if [ "$distro" == "Scientific" ]; then
+            download "http://kb.cloudopt.com/sci-init.patch" 
             message "Patching init script for Scientific Linux" action
-            download "http://kb.cloudopt.com/sci-init.patch" && patch /etc/init.d/cloudoptimizer sci-init.patch && message "OK" status || die "Couldn't patch init script.  Exiting."
+            patch /etc/init.d/cloudoptimizer sci-init.patch >>$log 2>&1 && message "OK" status || die "Couldn't patch init script.  Exiting."
         fi
         if [ "$distro" == "Oracle" ]; then
+            download "http://kb.cloudopt.com/ora-init.patch" 
             message "Patching init script for Oracle Linux" action
-            download "http://kb.cloudopt.com/ora-init.patch" && patch /etc/init.d/cloudoptimizer ora-init.patch && message "OK" status || die "Couldn't patch init script.  Exiting."
+            patch /etc/init.d/cloudoptimizer ora-init.patch >>$log 2>&1 && message "OK" status || die "Couldn't patch init script.  Exiting."
         fi
         if [ "$distro" == "Fedora" ]; then
+            download "http://kb.cloudopt.com/fed-init.patch" 
             message "Patching init script for Fedora Linux" action
-            download "http://kb.cloudopt.com/fed-init.patch" && patch /etc/init.d/cloudoptimizer fed-init.patch && message "OK" status || die "Couldn't patch init script.  Exiting."
+            patch /etc/init.d/cloudoptimizer fed-init.patch >>$log 2>&1 && message "OK" status || die "Couldn't patch init script.  Exiting."
         fi
         if [ "$distro" == "Amazon" ]; then
+            download "http://kb.cloudopt.com/aws-init.patch" 
             message "Patching init script for Amazon Linux" action
-            download "http://kb.cloudopt.com/aws-init.patch" && patch /etc/init.d/cloudoptimizer aws-init.patch && message "OK" status || die "Couldn't patch init script.  Exiting."
+            patch /etc/init.d/cloudoptimizer aws-init.patch >>$log 2>&1 && message "OK" status || die "Couldn't patch init script.  Exiting."
         fi
-    elif [ $os_type == "ubuntu" ]; then
-        message "Updating apt cache (this make take a while)" action
+    elif [ "$os_type" == "ubuntu" ]; then
+        message "Updating apt cache (this may take a while)" action
         apt-get update >>$log 2>&1 && message "OK" status || message "Apt update failed.  We'll try to install anyway, but this might be a problem." warning
         if [ "$downgrade" == "1" ]; then
             message "We must remove the previous version in order to downgrade with apt." warning
             remove_apt
         fi
-        if [ $distro = "Ubuntu" ]; then
+        if [ "$distro" == "Ubuntu" ]; then
             if [ $arch = "x86_64" ]; then
                 if [ "$previous" == "1" ] || [ "$version" == "11.10" ] || [ "$version" == "12.10" ] || [ "$version" == "13.04" ]; then
                     repopath="http://apt.cloudopt.com/ubuntu/pool/main/c/cloudoptimizer"
@@ -1449,16 +1468,30 @@ if [ "$reposonly" == "0" ]; then
             elif [ $arch = "i386" ]; then
                 repopath="http://apt.cloudopt.com/ubuntu/pool/main/c/cloudoptimizer"
                 install_gdebi
-            fi
-        elif [ $distro = "Debian" ]; then
+            fi    
+        elif [ "$distro" == "Debian" ]; then
+            repopath="http://apt.cloudopt.com/ubuntu/pool/main/c/cloudoptimizer"
+            install_gdebi
+        elif [ "$distro" == "LinuxMint" ]; then
             repopath="http://apt.cloudopt.com/ubuntu/pool/main/c/cloudoptimizer"
             install_gdebi
         fi
     fi
     if [ "$distro" == "LinuxMint" ]; then
+        download "http://kb.cloudopt.com/mint-init.patch"
         message "Patching init script for Mint Linux" action
-        download "http://kb.cloudopt.com/mint-init.patch" && patch /etc/init.d/cloudoptimizer mint-init.patch && message "OK" status || die "Couldn't patch init script.  Exiting."
+        patch /etc/init.d/cloudoptimizer mint-init.patch >>$log 2>&1 && message "OK" status || die "Couldn't patch init script.  Exiting."
     fi
+fi
+if [ "$skipyesno" != "1" ] && [ "$force" != "1" ]; then
+    message " Do you want to enable the CloudOptimizer WebUI? " prompt
+    if ! yesno
+        then message "CloudOptimizer WebUI remains disabled.  Enable it at any time by executing 'passwd uiadmin'."
+    fi
+    message "Please set the WebUI password:"
+    passwd uiadmin && \
+      message "Password set.  You can access the WebUI at https://localhost:8000/ and log in as uiadmin with the password you just set." || \
+      message "Failed to set password.  CloudOptimizer WebUI remains disabled.  Enable it at any time by executing 'passwd uiadmin'." warning
 fi
 
 echo
@@ -1486,6 +1519,9 @@ if [ -f $rundir/cloudoptimizer-packages.tar.gz ]; then
 fi
 if [ -f "$tempdir" ] && [ "$tempdir" != "/" ]; then
     rm -rf "$tempdir"
+fi
+if [ -f "/etc/apt/sources.list.d/ubuntu-quantal.list" ]; then
+    rm -f /etc/apt/sources.list.d/ubuntu-quantal.list
 fi
 exit 0
 
