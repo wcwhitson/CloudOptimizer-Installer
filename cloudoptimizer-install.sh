@@ -338,11 +338,11 @@ remove_yum() {
         command -v cloudconfig >>$log 2>&1 && homedir=`cloudconfig get /config/home` || message "Couldn't determine home directory.  Continuing anyway.  You might need to do some manual cleanup." warning
         command -v cloudconfig >>$log 2>&1 && logdir=`cloudconfig get /config/log_dir` || message "Couldn't determine log directory.  Continuing anyway.  You might need to do some manual cleanup." warning
         message "Removing cloudoptimizer-webui" action
-        yum -q -y remove cloudoptimizer-webui -Ðsetopt=clean_requirements_on_remove=1 >>$log 2>&1 && message "OK" status || message "Could not remove CloudOptimizer WebUI! You might need to do some manual cleanup." warning
+        yum -q -y remove cloudoptimizer-webui --setopt=clean_requirements_on_remove=1 >>$log 2>&1 && message "OK" status || message "Could not remove CloudOptimizer WebUI! You might need to do some manual cleanup." warning
         message "Removing cloudoptimizer" action
-        yum -q -y remove cloudoptimizer Ð-setopt=clean_requirements_on_remove=1 >>$log 2>&1 && message "OK" status || message "Could not remove CloudOptimizer! You might need to do some manual cleanup." warning
+        yum -q -y remove cloudoptimizer --setopt=clean_requirements_on_remove=1 >>$log 2>&1 && message "OK" status || message "Could not remove CloudOptimizer! You might need to do some manual cleanup." warning
         message "Removing cloudoptimizer-tools" action
-        yum -q -y remove cloudoptimizer-tools Ð-setopt=clean_requirements_on_remove=1 >>$log 2>&1 && message "OK" status || message "Could not remove CloudOptimizer Tools! You might need to do some manual cleanup." warning
+        yum -q -y remove cloudoptimizer-tools --setopt=clean_requirements_on_remove=1 >>$log 2>&1 && message "OK" status || message "Could not remove CloudOptimizer Tools! You might need to do some manual cleanup." warning
         message "Removing CloudOptimizer home directory" action
         rm -rf $homedir && message "OK" status || message "Couldn't remove home directory.  You might need to do some manual cleanup." warning
         message "Removing /etc/cloudoptimizer" action
@@ -369,11 +369,11 @@ remove_yum() {
         rm -rf /var/cache/yum/$arch/$majorver/CloudOpt* >>$log 2>&1 && yum clean all >>$log && message "OK" status || "Could not purge yum caches.  You might need to do some manual cleanup." warning
     else
         message "Removing cloudoptimizer-webui" action
-        yum -q -y remove cloudoptimizer-webui Ð-setopt=clean_requirements_on_remove=1 >>$log 2>&1 && message "OK" status || message "Could not remove CloudOptimizer WebUI! You might need to do some manual cleanup." warning
+        yum -q -y remove cloudoptimizer-webui --setopt=clean_requirements_on_remove=1 >>$log 2>&1 && message "OK" status || message "Could not remove CloudOptimizer WebUI! You might need to do some manual cleanup." warning
         message "Removing cloudoptimizer" action
-        yum -q -y remove cloudoptimizer Ð-setopt=clean_requirements_on_remove=1 >>$log 2>&1 && message "OK" status || message "Could not remove CloudOptimizer! You might need to do some manual cleanup." warning
+        yum -q -y remove cloudoptimizer --setopt=clean_requirements_on_remove=1 >>$log 2>&1 && message "OK" status || message "Could not remove CloudOptimizer! You might need to do some manual cleanup." warning
         message "Removing cloudoptimizer-tools" action
-        yum -q -y remove cloudoptimizer-tools Ð-setopt=clean_requirements_on_remove=1 >>$log 2>&1 && message "OK" message || die "Could not remove CloudOptimizer Tools! You might need to do some manual cleanup." warning
+        yum -q -y remove cloudoptimizer-tools --setopt=clean_requirements_on_remove=1 >>$log 2>&1 && message "OK" message || die "Could not remove CloudOptimizer Tools! You might need to do some manual cleanup." warning
     fi
 }
 
@@ -663,17 +663,10 @@ case $distro in
                     supports_ver="1.1.7"
                     cver=$CLOUDOPTIMIZER_DEB10_32_LABEL
                 else
-		            is_supported=0
+                    is_supported=0
                 fi
             ;;
             12.04|12.10)
-                #if [ "$version" == "12.10" ]; then
-                    # message "The CloudOptimizer WebUI is not currently supported on this version of Linux." warning
-                    # message " Continue with installation? (y/n) " prompt
-                    #if ! yesno
-                    #    then die "Install cancelled."
-                    #fi
-                #fi
                 if [ "$arch" = "x86_64" ]; then
                     if [ "$testing" = "1" ]; then
                         is_supported=1
