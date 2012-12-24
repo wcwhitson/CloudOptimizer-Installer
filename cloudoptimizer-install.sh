@@ -352,7 +352,11 @@ remove_yum() {
         rm -rf $logdir && message "OK" status || message "Couldn't remove log directory.  You might need to do some manual cleanup." warning
         message "Removing init scripts" action
         rm -f /etc/init.d/cloudoptimizer* && message "OK" status || message "Couldn't remove init scripts.  You might need to do some manual cleanup." warning
-        repodir="/etc/yum.repos.d"
+        if [ "$distro" == "Mageia" ]; then
+            repodir="/etc/yum/repos.d"
+        else
+            repodir="/etc/yum.repos.d"
+        fi
         existing_repos=(`find $repodir | egrep [Cc]loud[Oo]pt`)
         for existing_repo in ${existing_repos[@]}; do
             message "Removing repo ${existing_repo}" action 
@@ -690,6 +694,12 @@ case $distro in
             *)
                 is_supported=0
             ;;
+            10.10)
+                die "CloudOpt has tested Ubuntu version 10.10 and determined that CloudOptimizer cannot be installed successfully at this time."
+            ;;
+            13.04)
+                die "CloudOpt has tested Ubuntu 13.03 and determined that CloudOptimizer cannot be installed successfully at this time.  We are working it."
+            ;; 
         esac
         mpkg="cloudoptimizer_${cver}_${parch}.deb"
         wpkg="cloudoptimizer-webui_${cver}_${parch}.deb"
@@ -1004,6 +1014,18 @@ case $distro in
         wpkg="cloudoptimizer-webui-${cver}.${arch}.rpm"
         tpkg="cloudoptimizer-tools_${cver}.${arch}.rpm"
     ;;
+    Mageia)
+        os_type="rhel"
+        case $version in
+            2|3)
+                die "CloudOpt has tested Mageia versions 2 and 3 and determined that CloudOptimizer cannot be installed successfully at this time." 
+            ;;
+
+            *)
+                is_supported=0
+            ;;
+        esac
+    ;;
     Debian)
         os_type="ubuntu"
         case $version in
@@ -1224,7 +1246,9 @@ fi
 
 # Check for existing cloudopt repositories
 if [ "$local" == "0" ]; then
-    if [ $os_type == "rhel" ]; then
+    if [ "$distro" == "Mageia" ]; then
+        repodir="/etc/yum/repos.d"
+    elif [ $os_type == "rhel" ]; then
         repodir="/etc/yum.repos.d"
     elif [ $os_type == "ubuntu" ]; then
         repodir="/etc/apt/sources.list.d"
@@ -1259,13 +1283,13 @@ if [ "$local" == "0" ]; then
         fi
 
         # Set EPEL version for Amazon and Fedora Linux
-        if [ $majorver = "2012" ] || [ "$majorver" == "2011" ] || [ "$distro" == "Fedora" ]; then
+        if [ $majorver = "2012" ] || [ "$majorver" == "2011" ] || [ "$distro" == "Fedora" ] || [ "$distro" == "Mageia" ]; then
             os_version=6
         fi
 
         # EPEL check
         message "Checking for EPEL repository" action
-        rpm --quiet -q epel-release >>$log 2&>1 || [ "$distro" == "Fedora" ]
+        rpm --quiet -q epel-release >>$log 2&>1 || [ "$distro" == "Fedora" ] || [ "$distro" == "Mageia" ]
         if [ "$?" != "0" ]; then
             message "The Extra Packages for Enterprise Linux repository is not installed on your machine. This is required to provide dependencies for CloudOptimizer." warning
             message " Would you like us to install it now? (y/n) " prompt
@@ -1291,7 +1315,8 @@ if [ "$local" == "0" ]; then
         # Install repo file
         download $repo/repo/Cloudopt-$yumrepotype.$os_version.repo
         message "Installing CentOS repository settings" action
-        cp $tempdir/Cloudopt-$yumrepotype.$os_version.repo /etc/yum.repos.d/ && message "OK" status || die "Could not copy repo file to '/etc/yum.repos.d/' ! Exiting."
+        
+        cp $tempdir/Cloudopt-$yumrepotype.$os_version.repo "$repodir" && message "OK" status || die "Could not copy repo file to "$repodir" ! Exiting."
 
     elif [ $os_type == "ubuntu" ] && [ $distro != "Debian" ] && [ "$distro" != "LinuxMint" ]; then
         if [ "$version" != "11.10" ] && [ "$version" != "12.10" ] && [ "$version" != "13.04" ]; then
