@@ -99,6 +99,8 @@ guessdist() {
         if [ "$lsb" = "true" ]; then
             distro=`lsb_release -si`
             version=`lsb_release -sr`
+            ddistro=`lsb_release -sd |cut -d" " -f1`
+            dversion=`lsb_release -sd |cut -d" " -f2`
         else
             issuelen=`head -n1 /etc/issue |wc -w`
             distro=`head -n1 /etc/issue |cut -d" " -f1`
@@ -113,6 +115,12 @@ guessdist() {
             fi
         fi
     fi
+    
+    if [ "$ddistro" == "Snowlinux" ]; then
+        distro="$ddistro"
+        version="$dversion"
+    fi
+    
     majorver=`echo "$version" |cut -d. -f1`
     os_version="$majorver"
     arch=`uname -m`
@@ -848,6 +856,36 @@ case $distro in
         wpkg="cloudoptimizer-webui_${cver}_${parch}.deb"
         tpkg="cloudoptimizer-tools_${cver}_${parch}.deb"
     ;;
+    LinuxDeepin)
+        os_type="ubuntu"
+        case $version in
+            12.06)
+                if [ $arch = "x86_64" ]; then
+                    if [ "$testing" = "1" ]; then
+                        is_supported=1
+                        supports_ver=$CLOUDOPTIMIZER_TESTING_VERSION
+                        cver=$CLOUDOPTIMIZER_TEST_DEB10_64_LABEL
+                    elif [ "$previous" = "1" ]; then
+                        is_supported=1
+                        supports_ver=$CLOUDOPTIMIZER_PREVIOUS_VERSION
+                        cver=$CLOUDOPTIMIZER_PREV_DEB10_64_LABEL
+                    else 
+                        is_supported=1
+                        supports_ver=$CLOUDOPTIMIZER_CURRENT_VERSION
+                        cver=$CLOUDOPTIMIZER_DEB10_64_LABEL
+                    fi
+                elif [ "$arch" = "i386" ]; then
+                    is_supported=0
+                fi
+            ;;
+            *)
+                is_supported=0
+            ;;
+        esac
+        mpkg="cloudoptimizer_${cver}_${parch}.deb"
+        wpkg="cloudoptimizer-webui_${cver}_${parch}.deb"
+        tpkg="cloudoptimizer-tools_${cver}_${parch}.deb"
+    ;;
     CentOS)
         os_type="rhel"
         case $version in
@@ -1215,6 +1253,40 @@ case $distro in
         wpkg="cloudoptimizer-webui_${cver}_${parch}.deb"
         tpkg="cloudoptimizer-tools_${cver}_${parch}.deb"
     ;;
+    Snowlinux)
+        os_type="ubuntu"
+        case $version in
+            3.1)
+                if [ "$arch" = "x86_64" ]; then
+                    if [ "$testing" = "1" ]; then
+                        is_supported=1
+                        supports_ver=$CLOUDOPTIMIZER_TESTING_VERSION
+                        cver=$CLOUDOPTIMIZER_TEST_DEB10_64_LABEL
+                    elif [ "$previous" = "1" ]; then
+                        is_supported=1
+                        supports_ver=$CLOUDOPTIMIZER_PREVIOUS_VERSION
+                        cver=$CLOUDOPTIMIZER_PREV_DEB10_64_LABEL
+                    else
+                        is_supported=1
+                        supports_ver=$CLOUDOPTIMIZER_CURRENT_VERSION
+                        cver=$CLOUDOPTIMIZER_DEB10_64_LABEL
+                    fi 
+                elif [ "$arch" = "i386" ]; then
+                    is_supported=1
+                    supports_ver="1.1.7"
+                    cver=$CLOUDOPTIMIZER_DEB10_32_LABEL
+                else
+                    is_supported=0
+                fi
+            ;;
+            *)
+                is_supported=0
+            ;;
+        esac
+        mpkg="cloudoptimizer_${cver}_${parch}.deb"
+        wpkg="cloudoptimizer-webui_${cver}_${parch}.deb"
+        tpkg="cloudoptimizer-tools_${cver}_${parch}.deb"
+    ;;
     LinuxMint)
         os_type="ubuntu"
         case $version in
@@ -1509,14 +1581,14 @@ if [ "$local" == "0" ]; then
         
         cp $tempdir/Cloudopt-$yumrepotype.$os_version.repo "$repodir" && message "OK" status || die "Could not copy repo file to "$repodir" ! Exiting."
 
-    elif [ $os_type == "ubuntu" ] && [ $distro != "Debian" ] && [ "$distro" != "LinuxMint" ]; then
+    elif [ $os_type == "ubuntu" ] && [ $distro != "Debian" ] && [ "$distro" != "LinuxMint" ] && [ "$distro" != "Snowlinux" ]; then
         if [ "$version" != "11.10" ] && [ "$version" != "12.10" ] && [ "$version" != "13.04" ]; then
             repo="http://apt.cloudopt.com"
             download $repo/keys/cloudopt-release-ubuntu.key
-            message "Importing Ubuntu signing key" action
+            message "Importing apt signing key" action
             apt-key add $tempdir/cloudopt-release-ubuntu.key >>$log 2&>1 && message "OK" status || die "Could not import Cloudopt APT GPG key! Exiting."
             download $repo/repo/cloudopt-$aptrepotype.`lsb_release -cs`.list
-            message "Installing Ubuntu repository settings" action
+            message "Installing apt repository settings" action
             cp $tempdir/cloudopt-$aptrepotype.`lsb_release -cs`.list /etc/apt/sources.list.d/ && message "OK" status || die "Could not copy repo file to '/etc/apt/sources.list.d/' ! Exiting."
             message "Updating APT package index (this may take a while)" action
             apt-get -qq update && message "OK" status || die "Could not update repository data! Exiting."
@@ -1677,10 +1749,7 @@ if [ "$reposonly" == "0" ]; then
                         install_apt
                     fi
                 fi
-        elif [ "$distro" == "Debian" ]; then
-            repopath="http://apt.cloudopt.com/ubuntu/pool/main/c/cloudoptimizer"
-            install_gdebi
-        elif [ "$distro" == "LinuxMint" ]; then
+        elif [ "$distro" == "Debian" ] || [ "$distro" == "LinuxMint" ] || [ "$distro" == "Snowlinux" ] || [ "$distro" == "LinuxDeepin" ]; then
             repopath="http://apt.cloudopt.com/ubuntu/pool/main/c/cloudoptimizer"
             install_gdebi
         fi
@@ -1689,6 +1758,11 @@ if [ "$reposonly" == "0" ]; then
         download "http://kb.cloudopt.com/mint-init.patch"
         message "Patching init script for Mint Linux" action
         patch /etc/init.d/cloudoptimizer mint-init.patch >>$log 2>&1 && message "OK" status || die "Couldn't patch init script.  Exiting."
+    fi
+    if [ "$distro" == "LinuxDeepin" ]; then
+        download "http://kb.cloudopt.com/deep-init.patch"
+        message "Patching init script for Deepin Linux" action
+        patch /etc/init.d/cloudoptimizer deep-init.patch >>$log 2>&1 && message "OK" status || die "Couldn't patch init script.  Exiting."
     fi
     if [ "$distro" == "Zorin" ]; then
         download "http://kb.cloudopt.com/zor-init.patch"
@@ -1707,7 +1781,7 @@ if [ "$password" == "1" ]; then
           echo;message "You can access the WebUI at https://localhost:8000/ and log in as uiadmin with the password you just set." || \
           message "Failed to set password.  CloudOptimizer WebUI remains disabled.  Enable it at any time by executing 'passwd uiadmin'." warning
     fi
-else
+elif [ "$skipyesno" != "1" ] && [ "$force" != "1" ]; then
     message " Do you want to enable the CloudOptimizer WebUI? " prompt
     if ! yesno
         then message "CloudOptimizer WebUI remains disabled.  Enable it at any time by executing 'passwd uiadmin'."
@@ -1716,6 +1790,8 @@ else
     passwd uiadmin && \
       echo;message "You can access the WebUI at https://localhost:8000/ and log in as uiadmin with the password you just set." || \
       message "Failed to set password.  CloudOptimizer WebUI remains disabled.  Enable it at any time by executing 'passwd uiadmin'." warning
+else
+    message "CloudOptimizer WebUI remains disabled.  Enable it at any time by executing 'passwd uiadmin'."
 fi
 
 
