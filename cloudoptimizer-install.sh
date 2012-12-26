@@ -10,7 +10,7 @@
 # Constants #
 #############
 
-INSTALLER_VERSION="1.18"
+INSTALLER_VERSION="1.19"
 
 CLOUDOPTIMIZER_PREVIOUS_VERSION="1.2.1"
 CLOUDOPTIMIZER_CURRENT_VERSION="1.3.0"
@@ -81,25 +81,38 @@ rundir=`pwd "${BASH_SOURCE[0]}"`
 # guessdist()
 # Simple check to see if we are running on a supported version
 guessdist() {
-    command -v lsb_release >>$log && lsb="true" || lsb="false"
-
-    if [ "$lsb" = "true" ]; then
-        distro=`lsb_release -si`
-        version=`lsb_release -sr`
+    if [ "$forcedist" == "1" ] && [ "$forcever" == "1" ]; then
+        distro="$force_distro"
+        version="$force_version"
+        message "You have chosen to force the Linux distribution and version." warning
+        message "You should not continue unless you know what you are doing.  Forcing the distribution could leave your system in an unstable state." warning
+        message "You have specified the distribution \"$distro\" and the version \"$version\"."
+        message " Continue? (y/n) " prompt
+        if ! yesno force
+            then die "Installation cancelled."
+        fi
+    elif [ "$forcedist" == "1" ] || [ "$forcever" == "1" ]; then
+        die "You must set both a distribution and version when forcing the Linux type."
     else
-        issuelen=`head -n1 /etc/issue |wc -w`
-        distro=`head -n1 /etc/issue |cut -d" " -f1`
-        if [ "$distro" == "Debian" ]; then
-            version=`head -n1 /etc/debian_version`
-        elif [ "$distro" == "Fedora" ]; then
-            version=`head -n1 /etc/issue |cut -d" " -f3`
-        elif [ "$distro" == "Scientific" ]; then
-            version=`head -n1 /etc/issue |cut -d" " -f4`
+        command -v lsb_release >>$log && lsb="true" || lsb="false"
+
+        if [ "$lsb" = "true" ]; then
+            distro=`lsb_release -si`
+            version=`lsb_release -sr`
         else
-            version=`head -n1 /etc/issue |cut -d" " -f$issuelen`
+            issuelen=`head -n1 /etc/issue |wc -w`
+            distro=`head -n1 /etc/issue |cut -d" " -f1`
+            if [ "$distro" == "Debian" ]; then
+                version=`head -n1 /etc/debian_version`
+            elif [ "$distro" == "Fedora" ]; then
+                version=`head -n1 /etc/issue |cut -d" " -f3`
+            elif [ "$distro" == "Scientific" ]; then
+                version=`head -n1 /etc/issue |cut -d" " -f4`
+            else
+                version=`head -n1 /etc/issue |cut -d" " -f$issuelen`
+            fi
         fi
     fi
-
     majorver=`echo "$version" |cut -d. -f1`
     os_version="$majorver"
     arch=`uname -m`
@@ -116,6 +129,9 @@ guessdist() {
     fi
     if [ "$distro" == "AmazonAMI" ]; then
         distro="Amazon"
+    fi
+    if [ "$distro" == "SUSE LINUX" ]; then
+        distro="SUSE"
     fi
 }
 
@@ -178,21 +194,25 @@ download() {
 }
 
 showhelp() {
-    message "-a|--auto           Automatic installation: the same as using --accept-eula, --yes, --force, and --noupdate." nolog
-    message "-c|--check          Check to see if installation is possible, but don't install any files." nolog
-    message "-e|--accept-eula    Accept the CloudOptimizer end user license agreement (for automated installation)." nolog
-    message "-f|--force          A stronger --yes, will bypass prompts for actions that may be destructive (for automated installation)." nolog
-    message "-h|--help           Show this help screen." nolog
-    message "-l|--local          Perform an install without connection to the Internet.  Package files must be located in the same directory as the script." nolog
-    message "-m|--manifest       Generate a script that will download all the required packages on another system (for local install.)" nolog
-    message "-n|--noupdate       Don't check for a more recent version of the installer (recommended for automated installation)." nolog
-    message "-p|--previous       Install the previous version (not recommended unless advised by CloudOpt Support)." nolog
-    message "-r|--reposonly      Only install the software repositories." nolog
-    message "-s|--support        Collect diagnostic information in a file for CloudOpt support if this script failed." nolog
-    message "-t|--tarball        Use a package archive created with --manifest for local installation." nolog
-    message "-u|--remove         Remove CloudOptimizer but leave all cache and configuration files." nolog
-    message "-y|--yes            Bypass most prompts, answering yes (for automated installation)." nolog
-    message "-x|--purge          Remove CloudOptimizer and delete everything that is not removed by the package manager." nolog
+    message "-a|--auto                Automatic installation: the same as using --accept-eula, --yes, --force, and --noupdate." nolog
+    message "-c|--check               Check to see if installation is possible, but don't install any files." nolog
+    message "--distro <distro>        Specify a Linux distribution that the script recognizes in order to try installing on an unsupported distro." nolog
+    message "-e|--accept-eula         Accept the CloudOptimizer end user license agreement (for automated installation)." nolog
+    message "-f|--force               A stronger --yes, will bypass prompts for actions that may be destructive (for automated installation)." nolog
+    message "-h|--help                Show this help screen." nolog
+    message "-l|--local               Perform an install without connection to the Internet.  Package files must be located in the same directory as the script." nolog
+    message "-m|--manifest            Generate a script that will download all the required packages on another system (for local install.)" nolog
+    message "-n|--noupdate            Don't check for a more recent version of the installer (recommended for automated installation)." nolog
+    message "--noclean                Don't clean up the script's temp directory, downloaded files, etc."
+    message "-p|--previous            Install the previous version (not recommended unless advised by CloudOpt Support)." nolog
+    message "--password <password>    Set the WebUI password from the command line for automated installation." nolog
+    message "-r|--reposonly           Only install the software repositories." nolog
+    message "-s|--support             Collect diagnostic information in a file for CloudOpt support if this script failed." nolog
+    message "-t|--tarball             Use a package archive created with --manifest for local installation." nolog
+    message "-u|--remove              Remove CloudOptimizer but leave all cache and configuration files." nolog
+    message "--version <version>      Specify a Linux version that the script recognizes in order to try installing on an unsupported distro." nolog
+    message "-y|--yes                 Bypass most prompts, answering yes (for automated installation)." nolog
+    message "-x|--purge               Remove CloudOptimizer and delete everything that is not removed by the package manager." nolog
 }
 
 # message()
@@ -307,6 +327,7 @@ remove_apt() {
         done
     else
         message "Removing cloudoptimizer-webui" action
+        apt-get -qqy $action --auto-remove cloudoptimizer-webui >>$log 2>&1 && message "OK" status || message "Could not remove CloudOptimizer WebUI! You might need to do some manual cleanup." warning
         message "Removing cloudoptimizer" action
         apt-get -qqy $action --auto-remove cloudoptimizer >>$log 2>&1 && message "OK" status || message "Could not remove CloudOptimizer! You might need to do some manual cleanup." warning
         message "Removing cloudoptimizer-tools" action
@@ -321,6 +342,17 @@ install_yum() {
     yum -q -y install cloudoptimizer-$cver >>$log 2>&1 && message "OK" status || die "Could not install Cloudoptimizer! Exiting."
     message "Installing cloudoptimizer-webui package" action
     yum -q -y install cloudoptimizer-webui-$cver >>$log 2>&1 && message "OK" status || die "Could not install Cloudoptimizer WebUI! Exiting."
+}
+
+install_yast() {
+    message "Downloading CloudOptimizer packages..."
+    download $repopath/$tpkg && download $repopath/$mpkg && download $repopath/$wpkg
+    message "Installing cloudoptimizer-tools package" action
+    yast -i $tpkg && message "OK" status || die "Could not install Cloudoptimizer Tools! Exiting."
+    message "Installing cloudoptimizer package" action
+    yast -i $mpkg 2>&1 && message "OK" status || die "Could not install Cloudoptimizer! Exiting."
+    message "Installing cloudoptimizer-webui package" action
+    yast -i $wpkg 2>&1 && message "OK" status || die "Could not install Cloudoptimizer WebUI! Exiting."
 }
 
 remove_yum() {
@@ -377,12 +409,65 @@ remove_yum() {
     fi
 }
 
+remove_rpm() {
+    message " Remove CloudOptimizer? (y/n) " prompt
+    if ! yesno
+        then die "Failed to remove CloudOptimizer.  Exiting."
+    fi
+    message "Removing CloudOptimizer..."
+    if [ "$purge" == "1" ]; then
+        message "Purging will remove files that you have changed since installation." warning
+        message " Proceed? (y/n) " prompt force
+        if !  yesno force
+            then die "Install cancelled."
+        fi
+        command -v cloudconfig >>$log 2>&1 && homedir=`cloudconfig get /config/home` || message "Couldn't determine home directory.  Continuing anyway.  You might need to do some manual cleanup." warning
+        command -v cloudconfig >>$log 2>&1 && logdir=`cloudconfig get /config/log_dir` || message "Couldn't determine log directory.  Continuing anyway.  You might need to do some manual cleanup." warning
+        message "Removing cloudoptimizer-webui" action
+        rpm -e cloudoptimizer-webui >>$log 2>&1 && message "OK" status || message "Could not remove CloudOptimizer WebUI! You might need to do some manual cleanup." warning
+        message "Removing cloudoptimizer" action
+        rpm -e cloudoptimizer >>$log 2>&1 && message "OK" status || message "Could not remove CloudOptimizer! You might need to do some manual cleanup." warning
+        message "Removing cloudoptimizer-tools" action
+        rpm -e cloudoptimizer-tools >>$log 2>&1 && message "OK" status || message "Could not remove CloudOptimizer Tools! You might need to do some manual cleanup." warning
+        message "Removing CloudOptimizer home directory" action
+        rm -rf $homedir && message "OK" status || message "Couldn't remove home directory.  You might need to do some manual cleanup." warning
+        message "Removing /etc/cloudoptimizer" action
+        rm -rf /etc/cloudoptimizer && message "OK" status || message "Couldn't remove /etc/cloudoptimizer! You might need to do some manual cleanup." warning
+        message "Removing /var/run/cloudopt-webserver" action
+        rm -rf /var/run/cloudopt-webserver && message "OK" status || message "Couldn't remove /var/run/cloudopt-webserver! You might need to do some manual cleanup." warning
+        message "Removing cores" action
+        rm -f /var/crash/cloudopt* && message "OK" status || message "Couldn't remove cores!  You might need to do some manual cleanup." warning
+        message "Removing /var/log/cloudoptimizer" action
+        rm -rf $logdir && message "OK" status || message "Couldn't remove log directory.  You might need to do some manual cleanup." warning
+        message "Removing init scripts" action
+        rm -f /etc/init.d/cloudoptimizer* && message "OK" status || message "Couldn't remove init scripts.  You might need to do some manual cleanup." warning
+        if [ "$distro" == "Mageia" ]; then
+            repodir="/etc/yum/repos.d"
+        elsen
+            repodir="/etc/yum.repos.d"
+        fi
+        existing_repos=(`find $repodir | egrep [Cc]loud[Oo]pt`)
+        for existing_repo in ${existing_repos[@]}; do
+            message "Removing repo ${existing_repo}" action 
+            rm ${existing_repo} && message "OK" status || message "Could not remove ${existing_repo}! You might need to do some manual cleanup." warning
+        done
+    else
+        message "Removing cloudoptimizer-webui" action
+        rpm -e cloudoptimizer-webui >>$log 2>&1 && message "OK" status || message "Could not remove CloudOptimizer WebUI! You might need to do some manual cleanup." warning
+        message "Removing cloudoptimizer" action
+        rpm -e cloudoptimizer >>$log 2>&1 && message "OK" status || message "Could not remove CloudOptimizer! You might need to do some manual cleanup." warning
+        message "Removing cloudoptimizer-tools" action
+        rpm -e cloudoptimizer-tools >>$log 2>&1 && message "OK" message || die "Could not remove CloudOptimizer Tools! You might need to do some manual cleanup." warning
+    fi
+}
+
 install_rpm() {
     if [ "$manifest" == "1" ]; then
         averb="Finding"
     else
         averb="Installing"
     fi
+    rpm_cmd="rpm"
     if [ "$local" == "1" ]; then
         # Install / obtain dependencies
         num_packages=${#dep_packages[@]}
@@ -396,7 +481,7 @@ install_rpm() {
                 download $rundir/$pkg_name
                 message "$averb $pkg_name package" action
                 pkg_short_name=`rpm --qf "%{NAME}\n" -qp $rundir/$pkg_name`
-                rpm -q $pkg_short_name >>$log 2>&1 || rpm -i $rundir/$pkg_name >>$log 2>&1 && message "OK" status || die "Could not install $pkg_name! Exiting."
+                rpm -q $pkg_short_name >>$log 2>&1 || $rpm_cmd -i $rundir/$pkg_name >>$log 2>&1 && message "OK" status || die "Could not install $pkg_name! Exiting."
             fi
         done
         # Install / obtain cloudoptimizer-tools
@@ -406,7 +491,7 @@ install_rpm() {
         else
             download $rundir/$tpkg
             message "$averb cloudoptimizer-tools package" action
-            rpm -q cloudoptimizer-tools >>$log 2>&1 || rpm -i $rundir/$tpkg >>$log 2>&1 && message "OK" status || die "Could not install Cloudoptimizer Tools ($tpkg)! Exiting."
+            rpm -q cloudoptimizer-tools >>$log 2>&1 || $rpm_cmd -i $rundir/$tpkg >>$log 2>&1 && message "OK" status || die "Could not install Cloudoptimizer Tools ($tpkg)! Exiting."
         fi
         # Install / obtain cloudoptimizer
         if [ "$manifest" == "1" ]; then
@@ -415,7 +500,7 @@ install_rpm() {
         else
             download $rundir/$mpkg
             message "$averb cloudoptimizer package" action
-            rpm -q cloudoptimizer >>$log 2>&1 || rpm -i $rundir/$mpkg >>$log 2>&1 && message "OK" status || die "Could not install Cloudoptimizer ($mpkg)! Exiting."
+            rpm -q cloudoptimizer >>$log 2>&1 || $rpm_cmd -i $rundir/$mpkg >>$log 2>&1 && message "OK" status || die "Could not install Cloudoptimizer ($mpkg)! Exiting."
         fi
         # Install / obtain cloudoptimizer-webui
         if [ "$manifest" == "1" ]; then
@@ -424,15 +509,35 @@ install_rpm() {
         else
             download $rundir/$wpkg
             message "$averb cloudoptimizer-webui package" action
-            rpm -q cloudoptimizer-webui >>$log 2>&1 || rpm -i $rundir/$wpkg >>$log 2>&1 && message "OK" status || die "Could not install Cloudoptimizer WebUI ($wpkg)! Exiting."
+            rpm -q cloudoptimizer-webui >>$log 2>&1 || $rpm_cmd -i $rundir/$wpkg >>$log 2>&1 && message "OK" status || die "Could not install Cloudoptimizer WebUI ($wpkg)! Exiting."
         fi
     else
+        num_packages=${#dep_packages[@]}
+        for (( i = 0; i < $num_packages; i++)); do
+            pkg_url=${dep_packages[i]}
+            pkg_name=`basename ${dep_packages[i]}`
+            if [ "$manifest" == "1" ]; then
+                message "$averb $pkg_name package" action
+                echo "wget $pkg_url" >>$dl_script && echo "tar -rf cloudoptimizer-packages.tar $pkg_name" >>$dl_script && message "OK" status || die "Could not write to script! Exiting."
+            else
+                download $pkg_url
+                message "$averb $pkg_name package" action
+                pkg_short_name=`rpm --qf "%{NAME}\n" -qp $pkg_name`
+                rpm -q $pkg_short_name >>$log 2>&1 || $rpm_cmd -i $pkg_name >>$log 2>&1 && message "OK" status || die "Could not install $pkg_name! Exiting."
+            fi
+        done
+        if [ -f /etc/monitrc ]; then
+            ln -s /etc/monitrc /etc/monit.conf
+        fi
+        if [ -f /etc/init.d/syslog ]; then
+            ln -s /etc/init.d/syslog /etc/init.d/rsyslog
+        fi
         message "Installing cloudoptimizer-tools package" action
-        rpm -Uvh $repopath/$tpkg && message "OK" status || die "Could not install Cloudoptimizer Tools! Exiting."
+        $rpm_cmd -Uvh $repopath/$tpkg && message "OK" status || die "Could not install Cloudoptimizer Tools! Exiting."
         message "Installing cloudoptimizer package" action
-        rpm -Uvh $repopath/$mpkg && message "OK" status || die "Could not install Cloudoptimizer! Exiting."
+        $rpm_cmd -Uvh $repopath/$mpkg && message "OK" status || die "Could not install Cloudoptimizer! Exiting."
         message "Installing cloudoptimizer-webui package" action
-        rpm -Uvh $repopath/$wpkg && message "OK" status || die "Could not install Cloudoptimizer WebUI! Exiting."
+        $rpm_cmd -Uvh $repopath/$wpkg && message "OK" status || die "Could not install Cloudoptimizer WebUI! Exiting."
     fi
 }
 
@@ -531,9 +636,45 @@ purge=0
 local=0
 manifest=0
 tarball=0
+noclean=0
+password=0
+forcedist=0
+forcever=0
 
 while [ "$1" != "" ]; do
+    if [[ "$2" != -* ]]; then
+        flagarg="$2"
+    else
+        flagarg="null"
+    fi
     case $1 in
+        --distro)
+            if [ "$flagarg" == "null" ]; then
+                showhelp
+                die "Bad argument for $1"
+            else
+                forcedist=1
+                force_distro="$flagarg"
+            fi
+        ;;
+        --version)
+            if [ "$flagarg" == "null" ]; then
+                showhelp
+                die "Bad argument for $1"
+            else
+                forcever=1
+                force_version="$flagarg"
+            fi
+        ;;
+        --password)
+            if [ "$flagarg" == "null" ]; then
+                showhelp
+                die "Bad argument for $1"
+            else
+                password=1
+                ui_password="$flagarg"
+            fi
+        ;;
         --help|-h)
             showhelp
             exit 0
@@ -557,6 +698,9 @@ while [ "$1" != "" ]; do
         ;;
         --yes|-y)
             skipyesno=1
+        ;;
+        --noclean)
+            noclean=1
         ;;
         --noupdate|-n)
             noupdate=1
@@ -612,7 +756,11 @@ while [ "$1" != "" ]; do
             exit 0
         ;;
     esac
-    shift
+    if [[ "$2" != -* ]]; then
+        shift;shift
+    else
+        shift
+    fi
 done
 
 # Check to make sure installer is up to date
@@ -666,7 +814,7 @@ case $distro in
                     is_supported=0
                 fi
             ;;
-            12.04|12.10)
+            12.04|12.10|13.04)
                 if [ "$arch" = "x86_64" ]; then
                     if [ "$testing" = "1" ]; then
                         is_supported=1
@@ -692,9 +840,6 @@ case $distro in
             10.10)
                 die "CloudOpt has tested Ubuntu version 10.10 and determined that CloudOptimizer cannot be installed successfully at this time."
             ;;
-            13.04)
-                die "CloudOpt has tested Ubuntu 13.03 and determined that CloudOptimizer cannot be installed successfully at this time.  We are working it."
-            ;; 
             *)
                 is_supported=0
             ;;
@@ -1010,7 +1155,19 @@ case $distro in
         esac
         mpkg="cloudoptimizer-${cver}.${arch}.rpm"
         wpkg="cloudoptimizer-webui-${cver}.${arch}.rpm"
-        tpkg="cloudoptimizer-tools_${cver}.${arch}.rpm"
+        tpkg="cloudoptimizer-tools-${cver}.${arch}.rpm"
+    ;;
+    SUSE)
+        os_type="rhel"
+        case $version in
+            11.4|12|12.1|12.2)
+                die "CloudOpt has tested SUSE versions 11.4 through 12.2 and determined that CloudOptimizer cannot be installed successfully at this time." 
+            ;;
+
+            *)
+                is_supported=0
+            ;;
+        esac
     ;;
     Mageia)
         os_type="rhel"
@@ -1092,6 +1249,40 @@ case $distro in
         wpkg="cloudoptimizer-webui_${cver}_${parch}.deb"
         tpkg="cloudoptimizer-tools_${cver}_${parch}.deb"
     ;;
+    Zorin)
+        os_type="ubuntu"
+        case $version in
+            6)
+                if [ "$arch" = "x86_64" ]; then
+                    if [ "$testing" = "1" ]; then
+                        is_supported=1
+                        supports_ver=$CLOUDOPTIMIZER_TESTING_VERSION
+                        cver=$CLOUDOPTIMIZER_TEST_DEB12_64_LABEL
+                    elif [ "$previous" = "1" ]; then
+                        is_supported=1
+                        supports_ver=$CLOUDOPTIMIZER_PREVIOUS_VERSION
+                        cver=$CLOUDOPTIMIZER_PREV_DEB12_64_LABEL
+                    else
+                        is_supported=1
+                        supports_ver=$CLOUDOPTIMIZER_CURRENT_VERSION
+                        cver=$CLOUDOPTIMIZER_DEB12_64_LABEL
+                    fi
+                elif [ "$arch" = "i386" ]; then
+                    is_supported=1
+                    supports_ver="1.1.7"
+                    cver=$CLOUDOPTIMIZER_DEB10_32_LABEL
+                else
+                    is_supported=0
+                fi
+            ;;
+            *)
+                is_supported=0
+            ;;
+        esac
+        mpkg="cloudoptimizer_${cver}_${parch}.deb"
+        wpkg="cloudoptimizer-webui_${cver}_${parch}.deb"
+        tpkg="cloudoptimizer-tools_${cver}_${parch}.deb"
+    ;;
 esac
 
 if [ "$is_supported" == "0" ]; then
@@ -1120,7 +1311,7 @@ fi
 # Determine if CloudOptimizer is running
 if [ "$installed" == "1" ] && [ "$manifest" == "0" ]; then
     ps aux |grep "/usr/bin/cloudoptimizer" |grep -v "grep" >>$log 2>&1 && running=1 || running=0
-    command -v cloudconfig >>$log 2>&1 && co_version=`service cloudoptimizer show-version |cut -d- -f1` || co_version="unknown"
+    command -v cloudconfig >>$log 2>&1 && co_version=`service cloudoptimizer show-version |cut -d- -f1` >>$log 2>&1 || co_version="unknown"
     if [ "$running" == "1" ]; then
         message "CloudOptimizer version $co_version is installed and running.  If you continue, service will be interrupted." warning
         message " Continue? (y/n) " prompt force
@@ -1138,6 +1329,8 @@ fi
 if [ "$remove" == "1" ] && [ "$manifest" == "0" ]; then
     if [ "$os_type" == "ubuntu" ]; then
         remove_apt
+    elif [ "$distro" == "SUSE" ]; then
+        remove_rpm
     else
         remove_yum
     fi
@@ -1287,7 +1480,7 @@ if [ "$local" == "0" ]; then
 
         # EPEL check
         message "Checking for EPEL repository" action
-        rpm --quiet -q epel-release >>$log 2&>1 || [ "$distro" == "Fedora" ] || [ "$distro" == "Mageia" ]
+        rpm --quiet -q epel-release >>$log 2&>1 || [ "$distro" == "Fedora" ] || [ "$distro" == "Mageia" ] || [ "$distro" == "SUSE" ]
         if [ "$?" != "0" ]; then
             message "The Extra Packages for Enterprise Linux repository is not installed on your machine. This is required to provide dependencies for CloudOptimizer." warning
             message " Would you like us to install it now? (y/n) " prompt
@@ -1356,42 +1549,48 @@ if [ "$reposonly" == "0" ]; then
             message "We must remove the previous version before installing on RHEL variants." warning
             remove_yum
         fi
-        if [ "$local" == "1" ]; then
-            message "Installing dependencies locally"
-            if [ $distro = "RedHatEnterpriseServer" ] || [ "$distro" == "Oracle" ]; then
-                rpm -q xfsprogs >>$log 2>&1 && xfsprogs=1 || xfsprogs=0
-                if [ "$xfsprogs" = "0" ]; then
+        if [ $distro = "RedHatEnterpriseServer" ] || [ "$distro" == "Oracle" ]; then
+            rpm -q xfsprogs >>$log 2>&1 && xfsprogs=1 || xfsprogs=0
+            if [ "$xfsprogs" = "0" ]; then
+                if [ $majorver = "5" ]; then
                     message "Installing xfsprogs" action
-                    if [ $majorver = "5" ]; then
-                        download `basename $XFSPROGS_RPM5_64`
-                        rpm $rpmflags `basename $XFSPROGS_RPM5_64` >>$log 2>&1 && message "OK" status || die "Could not install xfsprogs!  Exiting."
-                    elif [ $majorver = "6" ]; then
-                        download `basename $XFSPROGS_RPM6_64`
-                        rpm $rpmflags `basename $XFSPROGS_RPM6_64` >>$log 2>&1 && message "OK" status || die "Could not install xfsprogs!  Exiting."
-                    fi
+                    download $XFSPROGS_RPM5_64
+                    rpm $rpmflags `basename $XFSPROGS_RPM5_64` >>$log 2>&1 && message "OK" status || die "Could not install xfsprogs!  Exiting."
+                elif [ $majorver = "6" ]; then
+                    message "Installing xfsprogs" action
+                    download $XFSPROGS_RPM6_64
+                    rpm $rpmflags `basename $XFSPROGS_RPM6_64` >>$log 2>&1 && message "OK" status || die "Could not install xfsprogs!  Exiting."
                 fi
             fi
-            if [ $distro = "Amazon" ] || [ "$distro" == "Fedora" ]; then
-                rpm -q monit >>$log 2>&1 && monit=1 || monit=0
-                if [ "$monit" = "0" ]; then
-                    message "Installing monit" action
-                    download `basename $MONIT_5_1_1_RPM6_64`
-                    rpm $rpmflags `basename $MONIT_5_1_1_RPM6_64` >>$log 2>&1 && message "OK" status || die "Could not install monit!  Exiting."
-                fi
+        fi
+        if [ $distro == "Amazon" ] || [ "$distro" == "Fedora" ]; then
+            rpm -q monit >>$log 2>&1 && monit=1 || monit=0
+            if [ "$monit" == "0" ]; then
+                download $MONIT_5_1_1_RPM6_64
+                message "Installing monit" action
+                rpm $rpmflags `basename $MONIT_5_1_1_RPM6_64` >>$log 2>&1 && message "OK" status || die "Could not install monit!  Exiting."
             fi
-            if [ "$distro" == "Fedora" ]; then
-                if [ "$version" == "13" ] || [ "$version" == "14" ] || [ "$version" == "15" ]; then
-                    message "Installing $GOOGLE_PERFTOOLS_RPM6_64" action
-                    yum -y localinstall --nogpgcheck $GOOGLE_PERFTOOLS_RPM6_64 && message "OK" status || die "Could not install `basename $GOOGLE_PERFTOOLS_RPM6_64`.  Exiting."
-                fi
+        fi
+        if [ $distro == "Amazon" ]; then
+            rpm -q gperftools-libs >>$log 2>&1 && gperftools=1 || gperftools=0
+            if [ "$gperftools" == "0" ]; then
+                download $GPERFTOOLS_LIBS_RPM6_64
+                message "Installing gperftools-libs" action
+                rpm $rpmflags `basename $GPERFTOOLS_LIBS_RPM6_64` >>$log 2>&1 && message "OK" status || die "Could not install monit!  Exiting."
             fi
-            if [ $majorver = "5" ]; then
-                rpm -q collectd >>$log 2>&1 && collectd=1 || collectd=0
-                if [ "$collectd" = "0" ]; then
-                    message "Installing collectd" action
-                    download `basename $COLLECTD_4_10_3_RPM5_64`
-                    rpm $rpmflags `basename $COLLECTD_4_10_3_RPM5_64` >>$log 2>&1 && message "OK" status || die "Could not install collectd!  Exiting."
-                fi
+        fi
+        if [ "$distro" == "Fedora" ]; then
+            if [ "$version" == "13" ] || [ "$version" == "14" ] || [ "$version" == "15" ]; then
+                message "Installing $GOOGLE_PERFTOOLS_RPM6_64" action
+                yum -y localinstall --nogpgcheck $GOOGLE_PERFTOOLS_RPM6_64 && message "OK" status || die "Could not install `basename $GOOGLE_PERFTOOLS_RPM6_64`.  Exiting."
+            fi
+        fi
+        if [ $majorver = "5" ]; then
+            rpm -q collectd >>$log 2>&1 && collectd=1 || collectd=0
+            if [ "$collectd" = "0" ]; then
+                download $COLLECTD_4_10_3_RPM5_64
+                message "Installing collectd" action
+                rpm $rpmflags `basename $COLLECTD_4_10_3_RPM5_64` >>$log 2>&1 && message "OK" status || die "Could not install collectd!  Exiting."
             fi
         fi
         if [ $arch = "x86_64" ]; then
@@ -1461,7 +1660,23 @@ if [ "$reposonly" == "0" ]; then
             elif [ $arch = "i386" ]; then
                 repopath="http://apt.cloudopt.com/ubuntu/pool/main/c/cloudoptimizer"
                 install_gdebi
-            fi    
+            fi
+        elif [ "$distro" == "Zorin" ]; then
+            if [ "$previous" == "1" ]; then
+                    repopath="http://apt.cloudopt.com/ubuntu/pool/main/c/cloudoptimizer"
+                    if [ "$local" == "1" ]; then
+                        install_dpkg
+                    else
+                        install_gdebi
+                    fi
+                else
+                    repopath="http://apt.cloudopt.com/ubuntu/pool/main/c/cloudoptimizer"
+                    if [ "$local" == "1" ]; then
+                        install_dpkg
+                    else
+                        install_apt
+                    fi
+                fi
         elif [ "$distro" == "Debian" ]; then
             repopath="http://apt.cloudopt.com/ubuntu/pool/main/c/cloudoptimizer"
             install_gdebi
@@ -1475,17 +1690,34 @@ if [ "$reposonly" == "0" ]; then
         message "Patching init script for Mint Linux" action
         patch /etc/init.d/cloudoptimizer mint-init.patch >>$log 2>&1 && message "OK" status || die "Couldn't patch init script.  Exiting."
     fi
+    if [ "$distro" == "Zorin" ]; then
+        download "http://kb.cloudopt.com/zor-init.patch"
+        message "Patching init script for Zorin Linux" action
+        patch /etc/init.d/cloudoptimizer zor-init.patch >>$log 2>&1 && message "OK" status || die "Couldn't patch init script.  Exiting."
+    fi
 fi
-if [ "$skipyesno" != "1" ] && [ "$force" != "1" ]; then
+
+if [ "$password" == "1" ]; then
+    if [ "$os_type" == "ubuntu" ]; then
+        echo "uiadmin:$ui_password" | chpasswd && \
+          echo;message "You can access the WebUI at https://localhost:8000/ and log in as uiadmin with the password you just set." || \
+          message "Failed to set password.  CloudOptimizer WebUI remains disabled.  Enable it at any time by executing 'passwd uiadmin'." warning
+    else
+        echo "$ui_password" | passwd --stdin uiadmin  && \
+          echo;message "You can access the WebUI at https://localhost:8000/ and log in as uiadmin with the password you just set." || \
+          message "Failed to set password.  CloudOptimizer WebUI remains disabled.  Enable it at any time by executing 'passwd uiadmin'." warning
+    fi
+else
     message " Do you want to enable the CloudOptimizer WebUI? " prompt
     if ! yesno
         then message "CloudOptimizer WebUI remains disabled.  Enable it at any time by executing 'passwd uiadmin'."
     fi
     message "Please set the WebUI password:"
     passwd uiadmin && \
-      message "Password set.  You can access the WebUI at https://localhost:8000/ and log in as uiadmin with the password you just set." || \
+      echo;message "You can access the WebUI at https://localhost:8000/ and log in as uiadmin with the password you just set." || \
       message "Failed to set password.  CloudOptimizer WebUI remains disabled.  Enable it at any time by executing 'passwd uiadmin'." warning
 fi
+
 
 echo
 if [ "$reposonly" == "1" ]; then
@@ -1504,17 +1736,21 @@ elif [ "$manifest" == "1" ]; then
 else
     message "Cloudoptimizer has been successfully installed." title
 fi
-message "Cleaning up..."
-if [ -f $rundir/cloudoptimizer-packages.tar.gz ]; then
-    for file in `tar -ztf $rundir/cloudoptimizer-packages.tar.gz`; do
-        rm -f $rundir/$file
-    done
-fi
-if [ -f "$tempdir" ] && [ "$tempdir" != "/" ]; then
-    rm -rf "$tempdir"
-fi
-if [ -f "/etc/apt/sources.list.d/ubuntu-quantal.list" ]; then
-    rm -f /etc/apt/sources.list.d/ubuntu-quantal.list
+if [ "$noclean" == "1" ]; then
+    message "Skipping clean up."
+else
+    message "Cleaning up..."
+    if [ -f $rundir/cloudoptimizer-packages.tar.gz ]; then
+        for file in `tar -ztf $rundir/cloudoptimizer-packages.tar.gz`; do
+            rm -f $rundir/$file
+        done
+    fi
+    if [ -f "$tempdir" ] && [ "$tempdir" != "/" ]; then
+        rm -rf "$tempdir"
+    fi
+    if [ -f "/etc/apt/sources.list.d/ubuntu-quantal.list" ]; then
+        rm -f /etc/apt/sources.list.d/ubuntu-quantal.list
+    fi
 fi
 exit 0
 
