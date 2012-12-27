@@ -10,64 +10,212 @@
 # Constants #
 #############
 
-INSTALLER_VERSION="1.19"
+# Update the following for each new version
+
+INSTALLER_VERSION="1.20"
+
+CLOUDOPT_REPO_APT="http://apt.cloudopt.com"
+CLOUDOPT_REPO_YUM="http://yum.cloudopt.com"
+
+CLOUDOPT_REPO_PATH_RPM5_64="CentOS/x86_64"
+CLOUDOPT_REPO_PATH_RPM5_32="CentOS/i386"
+CLOUDOPT_REPO_PATH_RPM6_64="CentOS-6/x86_64"
+CLOUDOPT_REPO_PATH_DEB10_64="ubuntu/pool/main/c/cloudoptimizer"
+CLOUDOPT_REPO_PATH_DEB12_64="ubuntu/pool/main/c/cloudoptimizer"
 
 CLOUDOPTIMIZER_PREVIOUS_VERSION="1.2.1"
 CLOUDOPTIMIZER_CURRENT_VERSION="1.3.0"
 CLOUDOPTIMIZER_TESTING_VERSION="1.3.0"
 
-# CloudOpt Package Versions
-CLOUDOPTIMIZER_RPM5_64_LABEL="1.3.0-222"
-CLOUDOPTIMIZER_RPM6_64_LABEL="1.3.0-118"
-CLOUDOPTIMIZER_RPM5_32_LABEL=""
-CLOUDOPTIMIZER_RPM6_32_LABEL=""
-CLOUDOPTIMIZER_DEB10_64_LABEL="1.3.0-229"
-CLOUDOPTIMIZER_DEB12_64_LABEL="1.3.0-130"
-CLOUDOPTIMIZER_DEB10_32_LABEL="1.1.7-26"
-CLOUDOPTIMIZER_DEB12_32_LABEL="1.1.7-26"
+CLOUDOPTIMIZER_CURRENT_RPM5_64_BUILD="222"
+CLOUDOPTIMIZER_CURRENT_RPM6_64_BUILD="118"
+CLOUDOPTIMIZER_CURRENT_RPM5_32_BUILD=""
+CLOUDOPTIMIZER_CURRENT_RPM6_32_BUILD=""
+CLOUDOPTIMIZER_CURRENT_DEB10_64_BUILD="229"
+CLOUDOPTIMIZER_CURRENT_DEB12_64_BUILD="130"
+CLOUDOPTIMIZER_CURRENT_DEB10_32_BUILD="26"
+CLOUDOPTIMIZER_CURRENT_DEB12_32_BUILD="26"
 
-CLOUDOPTIMIZER_PREV_RPM5_64_LABEL="1.2.1-120"
-CLOUDOPTIMIZER_PREV_RPM6_64_LABEL="1.2.1-119"
-CLOUDOPTIMIZER_PREV_RPM5_32_LABEL=""
-CLOUDOPTIMIZER_PREV_RPM6_32_LABEL=""
-CLOUDOPTIMIZER_PREV_DEB10_64_LABEL="1.2.1-124"
-CLOUDOPTIMIZER_PREV_DEB12_64_LABEL="1.2.1-121"
-CLOUDOPTIMIZER_PREV_DEB10_32_LABEL="1.1.7-26"
-CLOUDOPTIMIZER_PREV_DEB12_32_LABEL="1.1.7-26"
+CLOUDOPTIMIZER_PREVIOUS_RPM5_64_BUILD="120"
+CLOUDOPTIMIZER_PREVIOUS_RPM6_64_BUILD="119"
+CLOUDOPTIMIZER_PREVIOUS_RPM5_32_BUILD=""
+CLOUDOPTIMIZER_PREVIOUS_RPM6_32_BUILD=""
+CLOUDOPTIMIZER_PREVIOUS_DEB10_64_BUILD="124"
+CLOUDOPTIMIZER_PREVIOUS_DEB12_64_BUILD="121"
+CLOUDOPTIMIZER_PREVIOUS_DEB10_32_BUILD="26"
+CLOUDOPTIMIZER_PREVIOUS_DEB12_32_BUILD="26"
 
-CLOUDOPTIMIZER_TEST_RPM5_64_LABEL="1.3.0"
-CLOUDOPTIMIZER_TEST_RPM6_64_LABEL="1.3.0"
-CLOUDOPTIMIZER_TEST_DEB10_64_LABEL="1.3.0"
-CLOUDOPTIMIZER_TEST_DEB12_64_LABEL="1.3.0"
+# The following don't need to be changed
 
-# Other Packages
+CLOUDOPTIMIZER_CURRENT_RPM5_64_LABEL="${CLOUDOPTIMIZER_CURRENT_VERSION}-${CLOUDOPTIMIZER_CURRENT_RPM5_64_BUILD}"
+CLOUDOPTIMIZER_CURRENT_RPM6_64_LABEL="${CLOUDOPTIMIZER_CURRENT_VERSION}-${CLOUDOPTIMIZER_CURRENT_RPM6_64_BUILD}"
+CLOUDOPTIMIZER_CURRENT_RPM5_32_LABEL="${CLOUDOPTIMIZER_CURRENT_VERSION}-${CLOUDOPTIMIZER_CURRENT_RPM5_64_BUILD}"
+CLOUDOPTIMIZER_CURRENT_RPM6_32_LABEL="${CLOUDOPTIMIZER_CURRENT_VERSION}-${CLOUDOPTIMIZER_CURRENT_RPM6_64_BUILD}"
+CLOUDOPTIMIZER_CURRENT_DEB10_64_LABEL="${CLOUDOPTIMIZER_CURRENT_VERSION}-${CLOUDOPTIMIZER_CURRENT_DEB10_64_BUILD}"
+CLOUDOPTIMIZER_CURRENT_DEB12_64_LABEL="${CLOUDOPTIMIZER_CURRENT_VERSION}-${CLOUDOPTIMIZER_CURRENT_DEB12_64_BUILD}"
+CLOUDOPTIMIZER_CURRENT_DEB10_32_LABEL="${CLOUDOPTIMIZER_CURRENT_VERSION}-${CLOUDOPTIMIZER_CURRENT_DEB10_64_BUILD}"
+CLOUDOPTIMIZER_CURRENT_DEB12_32_LABEL="${CLOUDOPTIMIZER_CURRENT_VERSION}-${CLOUDOPTIMIZER_CURRENT_DEB12_64_BUILD}"
+
+CLOUDOPTIMIZER_PREVIOUS_RPM5_64_LABEL="${CLOUDOPTIMIZER_PREVIOUS_VERSION}-${CLOUDOPTIMIZER_PREVIOUS_RPM5_64_BUILD}"
+CLOUDOPTIMIZER_PREVIOUS_RPM6_64_LABEL="${CLOUDOPTIMIZER_PREVIOUS_VERSION}-${CLOUDOPTIMIZER_PREVIOUS_RPM6_64_BUILD}"
+CLOUDOPTIMIZER_PREVIOUS_RPM5_32_LABEL="${CLOUDOPTIMIZER_PREVIOUS_VERSION}-${CLOUDOPTIMIZER_PREVIOUS_RPM5_64_BUILD}"
+CLOUDOPTIMIZER_PREVIOUS_RPM6_32_LABEL="${CLOUDOPTIMIZER_PREVIOUS_VERSION}-${CLOUDOPTIMIZER_PREVIOUS_RPM6_64_BUILD}"
+CLOUDOPTIMIZER_PREVIOUS_DEB10_64_LABEL="${CLOUDOPTIMIZER_PREVIOUS_VERSION}-${CLOUDOPTIMIZER_PREVIOUS_DEB10_64_BUILD}"
+CLOUDOPTIMIZER_PREVIOUS_DEB12_64_LABEL="${CLOUDOPTIMIZER_PREVIOUS_VERSION}-${CLOUDOPTIMIZER_PREVIOUS_DEB12_64_BUILD}"
+CLOUDOPTIMIZER_PREVIOUS_DEB10_32_LABEL="${CLOUDOPTIMIZER_PREVIOUS_VERSION}-${CLOUDOPTIMIZER_PREVIOUS_DEB10_64_BUILD}"
+CLOUDOPTIMIZER_PREVIOUS_DEB12_32_LABEL="${CLOUDOPTIMIZER_PREVIOUS_VERSION}-${CLOUDOPTIMIZER_PREVIOUS_DEB12_64_BUILD}"
+
+# CloudOptimizer Main Packages
+
+CLOUDOPTIMIZER_CURRENT_RPM5_64_FILE="cloudoptimizer-${CLOUDOPTIMIZER_CURRENT_RPM5_64_LABEL}.x86_64.rpm"
+CLOUDOPTIMIZER_CURRENT_RPM6_64_FILE="cloudoptimizer-${CLOUDOPTIMIZER_CURRENT_RPM6_64_LABEL}.x86_64.rpm"
+CLOUDOPTIMIZER_CURRENT_RPM5_32_FILE="cloudoptimizer-${CLOUDOPTIMIZER_CURRENT_RPM5_32_LABEL}.x86_64.rpm"
+CLOUDOPTIMIZER_CURRENT_RPM6_32_FILE="cloudoptimizer-${CLOUDOPTIMIZER_CURRENT_RPM6_32_LABEL}.x86_64.rpm"
+CLOUDOPTIMIZER_CURRENT_DEB10_64_FILE="cloudoptimizer_${CLOUDOPTIMIZER_CURRENT_DEB10_64_LABEL}_amd64.deb"
+CLOUDOPTIMIZER_CURRENT_DEB12_64_FILE="cloudoptimizer_${CLOUDOPTIMIZER_CURRENT_DEB12_64_LABEL}_amd64.deb"
+CLOUDOPTIMIZER_CURRENT_DEB10_32_FILE="cloudoptimizer_${CLOUDOPTIMIZER_CURRENT_DEB10_32_LABEL}_amd64.deb"
+CLOUDOPTIMIZER_CURRENT_DEB12_32_FILE="cloudoptimizer_${CLOUDOPTIMIZER_CURRENT_DEB12_32_LABEL}_amd64.deb"
+
+CLOUDOPTIMIZER_PREVIOUS_RPM5_64_FILE="cloudoptimizer-${CLOUDOPTIMIZER_PREVIOUS_RPM5_64_LABEL}.x86_64.rpm"
+CLOUDOPTIMIZER_PREVIOUS_RPM6_64_FILE="cloudoptimizer-${CLOUDOPTIMIZER_PREVIOUS_RPM6_64_LABEL}.x86_64.rpm"
+CLOUDOPTIMIZER_PREVIOUS_RPM5_32_FILE="cloudoptimizer-${CLOUDOPTIMIZER_PREVIOUS_RPM5_32_LABEL}.x86_64.rpm"
+CLOUDOPTIMIZER_PREVIOUS_RPM6_32_FILE="cloudoptimizer-${CLOUDOPTIMIZER_PREVIOUS_RPM6_32_LABEL}.x86_64.rpm"
+CLOUDOPTIMIZER_PREVIOUS_DEB10_64_FILE="cloudoptimizer_${CLOUDOPTIMIZER_PREVIOUS_DEB10_64_LABEL}_amd64.deb"
+CLOUDOPTIMIZER_PREVIOUS_DEB12_64_FILE="cloudoptimizer_${CLOUDOPTIMIZER_PREVIOUS_DEB12_64_LABEL}_amd64.deb"
+CLOUDOPTIMIZER_PREVIOUS_DEB10_32_FILE="cloudoptimizer_${CLOUDOPTIMIZER_PREVIOUS_DEB10_32_LABEL}_amd64.deb"
+CLOUDOPTIMIZER_PREVIOUS_DEB12_32_FILE="cloudoptimizer_${CLOUDOPTIMIZER_PREVIOUS_DEB12_32_LABEL}_amd64.deb"
+
+# CloudOptimizer S3 Packages
+
+CLOUDOPTIMIZER_S3_CURRENT_RPM5_64_FILE="cloudoptimizer-s3-${CLOUDOPTIMIZER_CURRENT_RPM5_64_LABEL}.noarch.rpm"
+CLOUDOPTIMIZER_S3_CURRENT_RPM6_64_FILE="cloudoptimizer-s3-${CLOUDOPTIMIZER_CURRENT_RPM6_64_LABEL}.noarch.rpm"
+CLOUDOPTIMIZER_S3_CURRENT_RPM5_32_FILE="cloudoptimizer-s3-${CLOUDOPTIMIZER_CURRENT_RPM5_32_LABEL}.noarch.rpm"
+CLOUDOPTIMIZER_S3_CURRENT_RPM6_32_FILE="cloudoptimizer-s3-${CLOUDOPTIMIZER_CURRENT_RPM6_32_LABEL}.noarch.rpm"
+CLOUDOPTIMIZER_S3_CURRENT_DEB10_64_FILE="cloudoptimizer-s3_${CLOUDOPTIMIZER_CURRENT_DEB10_64_LABEL}_all.deb"
+CLOUDOPTIMIZER_S3_CURRENT_DEB12_64_FILE="cloudoptimizer-s3_${CLOUDOPTIMIZER_CURRENT_DEB12_64_LABEL}_all.deb"
+CLOUDOPTIMIZER_S3_CURRENT_DEB10_32_FILE="cloudoptimizer-s3_${CLOUDOPTIMIZER_CURRENT_DEB10_32_LABEL}_all.deb"
+CLOUDOPTIMIZER_S3_CURRENT_DEB12_32_FILE="cloudoptimizer-s3_${CLOUDOPTIMIZER_CURRENT_DEB12_32_LABEL}_all.deb"
+
+CLOUDOPTIMIZER_S3_PREVIOUS_RPM5_64_FILE="cloudoptimizer-s3-${CLOUDOPTIMIZER_PREVIOUS_RPM5_64_LABEL}.noarch.rpm"
+CLOUDOPTIMIZER_S3_PREVIOUS_RPM6_64_FILE="cloudoptimizer-s3-${CLOUDOPTIMIZER_PREVIOUS_RPM6_64_LABEL}.noarch.rpm"
+CLOUDOPTIMIZER_S3_PREVIOUS_RPM5_32_FILE="cloudoptimizer-s3-${CLOUDOPTIMIZER_PREVIOUS_RPM5_32_LABEL}.noarch.rpm"
+CLOUDOPTIMIZER_S3_PREVIOUS_RPM6_32_FILE="cloudoptimizer-s3-${CLOUDOPTIMIZER_PREVIOUS_RPM6_32_LABEL}.noarch.rpm"
+CLOUDOPTIMIZER_S3_PREVIOUS_DEB10_64_FILE="cloudoptimizer-s3_${CLOUDOPTIMIZER_PREVIOUS_DEB10_64_LABEL}_all.deb"
+CLOUDOPTIMIZER_S3_PREVIOUS_DEB12_64_FILE="cloudoptimizer-s3_${CLOUDOPTIMIZER_PREVIOUS_DEB12_64_LABEL}_all.deb"
+CLOUDOPTIMIZER_S3_PREVIOUS_DEB10_32_FILE="cloudoptimizer-s3_${CLOUDOPTIMIZER_PREVIOUS_DEB10_32_LABEL}_all.deb"
+CLOUDOPTIMIZER_S3_PREVIOUS_DEB12_32_FILE="cloudoptimizer-s3_${CLOUDOPTIMIZER_PREVIOUS_DEB12_32_LABEL}_all.deb"
+
+# CloudOptimizer Tools Packages
+
+CLOUDOPTIMIZER_TOOLS_CURRENT_RPM5_64_FILE="cloudoptimizer-tools-${CLOUDOPTIMIZER_CURRENT_RPM5_64_LABEL}.x86_64.rpm"
+CLOUDOPTIMIZER_TOOLS_CURRENT_RPM6_64_FILE="cloudoptimizer-tools-${CLOUDOPTIMIZER_CURRENT_RPM6_64_LABEL}.x86_64.rpm"
+CLOUDOPTIMIZER_TOOLS_CURRENT_RPM5_32_FILE="cloudoptimizer-tools-${CLOUDOPTIMIZER_CURRENT_RPM5_32_LABEL}.x86_64.rpm"
+CLOUDOPTIMIZER_TOOLS_CURRENT_RPM6_32_FILE="cloudoptimizer-tools-${CLOUDOPTIMIZER_CURRENT_RPM6_32_LABEL}.x86_64.rpm"
+CLOUDOPTIMIZER_TOOLS_CURRENT_DEB10_64_FILE="cloudoptimizer-tools_${CLOUDOPTIMIZER_CURRENT_DEB10_64_LABEL}_amd64.deb"
+CLOUDOPTIMIZER_TOOLS_CURRENT_DEB12_64_FILE="cloudoptimizer-tools_${CLOUDOPTIMIZER_CURRENT_DEB12_64_LABEL}_amd64.deb"
+CLOUDOPTIMIZER_TOOLS_CURRENT_DEB10_32_FILE="cloudoptimizer-tools_${CLOUDOPTIMIZER_CURRENT_DEB10_32_LABEL}_amd64.deb"
+CLOUDOPTIMIZER_TOOLS_CURRENT_DEB12_32_FILE="cloudoptimizer-tools_${CLOUDOPTIMIZER_CURRENT_DEB12_32_LABEL}_amd64.deb"
+
+CLOUDOPTIMIZER_TOOLS_PREVIOUS_RPM5_64_FILE="cloudoptimizer-tools-${CLOUDOPTIMIZER_PREVIOUS_RPM5_64_LABEL}.x86_64.rpm"
+CLOUDOPTIMIZER_TOOLS_PREVIOUS_RPM6_64_FILE="cloudoptimizer-tools-${CLOUDOPTIMIZER_PREVIOUS_RPM6_64_LABEL}.x86_64.rpm"
+CLOUDOPTIMIZER_TOOLS_PREVIOUS_RPM5_32_FILE="cloudoptimizer-tools-${CLOUDOPTIMIZER_PREVIOUS_RPM5_32_LABEL}.x86_64.rpm"
+CLOUDOPTIMIZER_TOOLS_PREVIOUS_RPM6_32_FILE="cloudoptimizer-tools-${CLOUDOPTIMIZER_PREVIOUS_RPM6_32_LABEL}.x86_64.rpm"
+CLOUDOPTIMIZER_TOOLS_PREVIOUS_DEB10_64_FILE="cloudoptimizer-tools_${CLOUDOPTIMIZER_PREVIOUS_DEB10_64_LABEL}_amd64.deb"
+CLOUDOPTIMIZER_TOOLS_PREVIOUS_DEB12_64_FILE="cloudoptimizer-tools_${CLOUDOPTIMIZER_PREVIOUS_DEB12_64_LABEL}_amd64.deb"
+CLOUDOPTIMIZER_TOOLS_PREVIOUS_DEB10_32_FILE="cloudoptimizer-tools_${CLOUDOPTIMIZER_PREVIOUS_DEB10_32_LABEL}_amd64.deb"
+CLOUDOPTIMIZER_TOOLS_PREVIOUS_DEB12_32_FILE="cloudoptimizer-tools_${CLOUDOPTIMIZER_PREVIOUS_DEB12_32_LABEL}_amd64.deb"
+
+# CloudOptimizer WebUI Packages
+
+CLOUDOPTIMIZER_WEBUI_CURRENT_RPM5_64_FILE="cloudoptimizer-webui-${CLOUDOPTIMIZER_CURRENT_RPM5_64_LABEL}.x86_64.rpm"
+CLOUDOPTIMIZER_WEBUI_CURRENT_RPM6_64_FILE="cloudoptimizer-webui-${CLOUDOPTIMIZER_CURRENT_RPM6_64_LABEL}.x86_64.rpm"
+CLOUDOPTIMIZER_WEBUI_CURRENT_RPM5_32_FILE="cloudoptimizer-webui-${CLOUDOPTIMIZER_CURRENT_RPM5_32_LABEL}.x86_64.rpm"
+CLOUDOPTIMIZER_WEBUI_CURRENT_RPM6_32_FILE="cloudoptimizer-webui-${CLOUDOPTIMIZER_CURRENT_RPM6_32_LABEL}.x86_64.rpm"
+CLOUDOPTIMIZER_WEBUI_CURRENT_DEB10_64_FILE="cloudoptimizer-webui_${CLOUDOPTIMIZER_CURRENT_DEB10_64_LABEL}_amd64.deb"
+CLOUDOPTIMIZER_WEBUI_CURRENT_DEB12_64_FILE="cloudoptimizer-webui_${CLOUDOPTIMIZER_CURRENT_DEB12_64_LABEL}_amd64.deb"
+CLOUDOPTIMIZER_WEBUI_CURRENT_DEB10_32_FILE="cloudoptimizer-webui_${CLOUDOPTIMIZER_CURRENT_DEB10_32_LABEL}_amd64.deb"
+CLOUDOPTIMIZER_WEBUI_CURRENT_DEB12_32_FILE="cloudoptimizer-webui_${CLOUDOPTIMIZER_CURRENT_DEB12_32_LABEL}_amd64.deb"
+
+CLOUDOPTIMIZER_WEBUI_PREVIOUS_RPM5_64_FILE="cloudoptimizer-webui-${CLOUDOPTIMIZER_PREVIOUS_RPM5_64_LABEL}.x86_64.rpm"
+CLOUDOPTIMIZER_WEBUI_PREVIOUS_RPM6_64_FILE="cloudoptimizer-webui-${CLOUDOPTIMIZER_PREVIOUS_RPM6_64_LABEL}.x86_64.rpm"
+CLOUDOPTIMIZER_WEBUI_PREVIOUS_RPM5_32_FILE="cloudoptimizer-webui-${CLOUDOPTIMIZER_PREVIOUS_RPM5_32_LABEL}.x86_64.rpm"
+CLOUDOPTIMIZER_WEBUI_PREVIOUS_RPM6_32_FILE="cloudoptimizer-webui-${CLOUDOPTIMIZER_PREVIOUS_RPM6_32_LABEL}.x86_64.rpm"
+CLOUDOPTIMIZER_WEBUI_PREVIOUS_DEB10_64_FILE="cloudoptimizer-webui_${CLOUDOPTIMIZER_PREVIOUS_DEB10_64_LABEL}_amd64.deb"
+CLOUDOPTIMIZER_WEBUI_PREVIOUS_DEB12_64_FILE="cloudoptimizer-webui_${CLOUDOPTIMIZER_PREVIOUS_DEB12_64_LABEL}_amd64.deb"
+CLOUDOPTIMIZER_WEBUI_PREVIOUS_DEB10_32_FILE="cloudoptimizer-webui_${CLOUDOPTIMIZER_PREVIOUS_DEB10_32_LABEL}_amd64.deb"
+CLOUDOPTIMIZER_WEBUI_PREVIOUS_DEB12_32_FILE="cloudoptimizer-webui_${CLOUDOPTIMIZER_PREVIOUS_DEB12_32_LABEL}_amd64.deb"
+
+# Other Packages - These will have to be updated on occasion
+#
+# We only use these packages for manual installation or as a supplement to automatic installation when the required
+# packages are not available from repositories for the distribution
+
+# collectd
+
 COLLECTD_4_10_3_RPM5_64="ftp://ftp.pbone.net/mirror/download.fedora.redhat.com/pub/fedora/epel/5/x86_64/collectd-4.10.3-1.el5.x86_64.rpm"
-MONIT_5_1_1_RPM6_64="http://dl.fedoraproject.org/pub/epel/6/x86_64/monit-5.1.1-4.el6.x86_64.rpm"
-MONIT_5_1_1_RPM5_64="http://yum.cloudopt.com/CentOS/x86_64/monit-5.1.1-1.el5.rf.x86_64.rpm"
-XFSPROGS_RPM5_64="ftp://ftp.pbone.net/mirror/ftp.freshrpms.net/pub/freshrpms/pub/freshrpms/redhat/testing/EL5/xfs/x86_64/xfsprogs-2.9.4-4.el5/xfsprogs-2.9.4-4.el5.x86_64.rpm"
-XFSPROGS_RPM6_64="ftp://ftp.pbone.net/mirror/ftp.centos.org/6.3/os/x86_64/Packages/xfsprogs-3.1.1-7.el6.x86_64.rpm"
-LIBNETFILTER_QUEUE_RPM5_32="http://yum.cloudopt.com/CentOS/i386/libnetfilter_queue-1.0.0-1.el5.i386.rpm"
-LIBNETFILTER_QUEUE_SO_1_RPM5_32="http://yum.cloudopt.com/CentOS/SRPMS/libnetfilter_queue-1.0.0-1.el5.src.rpm"
-LIBNFNETLINK_SO_0_RPM5_32="http://yum.cloudopt.com/CentOS/i386/libnfnetlink-1.0.0-1.el5.i386.rpm"
-LIBNET_RPM6_64="http://yum.cloudopt.com/CentOS-6/x86_64/libnet-1.1.5-2cnt6.x86_64.rpm"
-LIBNET_DEVEL_RPM6_64="http://yum.cloudopt.com/CentOS-6/x86_64/libnet-devel-1.1.5-2cnt6.x86_64.rpm"
-LIBNETFILTER_QUEUE_RPM6_64="http://yum.cloudopt.com/CentOS-6/x86_64/libnetfilter_queue-1.0.0-2cnt6.x86_64.rpm"
-LIBNETFILTER_QUEUE_SO_1_RPM6_64="http://yum.cloudopt.com/CentOS-6/x86_64/libnetfilter_queue-devel-1.0.0-2cnt6.x86_64.rpm"
-LIBNFNETLINK_RPM6_64="http://yum.cloudopt.com/CentOS-6/x86_64/libnfnetlink-1.0.0-2cnt6.x86_64.rpm"
-LIBNFNETLINK_SO_0_RPM6_64="http://yum.cloudopt.com/CentOS-6/x86_64/libnfnetlink-devel-1.0.0-2cnt6.x86_64.rpm"
-NC_RPM6_64="ftp://rpmfind.net/linux/centos/6.3/os/x86_64/Packages/nc-1.84-22.el6.x86_64.rpm"
-GPERFTOOLS_LIBS_RPM6_64="ftp://fr2.rpmfind.net/linux/epel/6/x86_64/gperftools-libs-2.0-3.el6.2.x86_64.rpm"
-GPERFTOOLS_LIBS_RPM5_64="http://puias.math.ias.edu/data/puias/computational/5/x86_64/gperftools-libs-2.0-3.el5.2.x86_64.rpm"
+COLLECTD_RRDTOOL_RPM6_64="http://dl.fedoraproject.org/pub/epel/6/x86_64/collectd-rrdtool-4.10.8-1.el6.x86_64.rpm"
+
+# dejavu
+
 DEJAVU_FONTS_COMMON_RPM6_64="http://mirror.centos.org/centos/6/os/i386/Packages/dejavu-fonts-common-2.30-2.el6.noarch.rpm"
 DEJAVU_LGC_SANS_MONO_FONTS_RPM6_64="http://dl.atrpms.net/el6-i386/atrpms/testing/dejavu-lgc-sans-mono-fonts-2.30-2.noarch.rpm"
 DEJAVU_SANS_MONO_FONTS_RPM6_64="http://mirror.centos.org/centos/6/os/i386/Packages/dejavu-sans-mono-fonts-2.30-2.el6.noarch.rpm"
+
+# fontpackages_filesystem
+
 FONTPACKAGES_FILESYSTEM="http://mirror.centos.org/centos/6/os/i386/Packages/fontpackages-filesystem-1.41-1.1.el6.noarch.rpm"
-RRDTOOL="http://mirror.centos.org/centos/6/os/x86_64/Packages/rrdtool-1.3.8-6.el6.x86_64.rpm"
-COLLECTD_RRDTOOL_RPM6_64="http://dl.fedoraproject.org/pub/epel/6/x86_64/collectd-rrdtool-4.10.8-1.el6.x86_64.rpm"
+
+# gperftools
+
 LIBGOOGLE_PERFTOOLS0_DEB12_64="http://launchpadlibrarian.net/93406085/libgoogle-perftools0_1.7-1ubuntu1_amd64.deb"
-LIBTCMALLOC_MINIMAL0_DEB12_64="http://launchpadlibrarian.net/93406083/libtcmalloc-minimal0_1.7-1ubuntu1_amd64.deb"
-LIBUNWIND7_DEB12_64="http://launchpadlibrarian.net/83640348/libunwind7_0.99-0.3ubuntu1_amd64.deb"
 GOOGLE_PERFTOOLS_RPM6_64="ftp://rpmfind.net/linux/epel/6/x86_64/gperftools-libs-2.0-3.el6.2.x86_64.rpm"
+GPERFTOOLS_LIBS_RPM5_64="http://puias.math.ias.edu/data/puias/computational/5/x86_64/gperftools-libs-2.0-3.el5.2.x86_64.rpm"
+GPERFTOOLS_LIBS_RPM6_64="ftp://fr2.rpmfind.net/linux/epel/6/x86_64/gperftools-libs-2.0-3.el6.2.x86_64.rpm"
+
+# libnet
+
+LIBNET_DEVEL_RPM6_64="http://yum.cloudopt.com/CentOS-6/x86_64/libnet-devel-1.1.5-2cnt6.x86_64.rpm"
+LIBNET_RPM6_64="http://yum.cloudopt.com/CentOS-6/x86_64/libnet-1.1.5-2cnt6.x86_64.rpm"
+
+# libnetfilter_queue
+
+LIBNETFILTER_QUEUE_RPM5_32="http://yum.cloudopt.com/CentOS/i386/libnetfilter_queue-1.0.0-1.el5.i386.rpm"
+LIBNETFILTER_QUEUE_SO_1_RPM5_32="http://yum.cloudopt.com/CentOS/SRPMS/libnetfilter_queue-1.0.0-1.el5.src.rpm"
+LIBNETFILTER_QUEUE_RPM6_64="http://yum.cloudopt.com/CentOS-6/x86_64/libnetfilter_queue-1.0.0-2cnt6.x86_64.rpm"
+LIBNETFILTER_QUEUE_SO_1_RPM6_64="http://yum.cloudopt.com/CentOS-6/x86_64/libnetfilter_queue-devel-1.0.0-2cnt6.x86_64.rpm"
+
+# libnfnetlink
+
+LIBNFNETLINK_RPM6_64="http://yum.cloudopt.com/CentOS-6/x86_64/libnfnetlink-1.0.0-2cnt6.x86_64.rpm"
+LIBNFNETLINK_SO_0_RPM5_32="http://yum.cloudopt.com/CentOS/i386/libnfnetlink-1.0.0-1.el5.i386.rpm"
+LIBNFNETLINK_SO_0_RPM6_64="http://yum.cloudopt.com/CentOS-6/x86_64/libnfnetlink-devel-1.0.0-2cnt6.x86_64.rpm"
+
+# libtcmalloc_minimal
+
+LIBTCMALLOC_MINIMAL0_DEB12_64="http://launchpadlibrarian.net/93406083/libtcmalloc-minimal0_1.7-1ubuntu1_amd64.deb"
+
+# libunwind
+
+LIBUNWIND7_DEB12_64="http://launchpadlibrarian.net/83640348/libunwind7_0.99-0.3ubuntu1_amd64.deb"
+
+# monit
+
+MONIT_5_1_1_RPM5_64="http://yum.cloudopt.com/CentOS/x86_64/monit-5.1.1-1.el5.rf.x86_64.rpm"
+MONIT_5_1_1_RPM6_64="http://dl.fedoraproject.org/pub/epel/6/x86_64/monit-5.1.1-4.el6.x86_64.rpm"
+
+# netcat
+
+NC_RPM6_64="ftp://rpmfind.net/linux/centos/6.3/os/x86_64/Packages/nc-1.84-22.el6.x86_64.rpm"
+
+# rrdtool
+
+RRDTOOL="http://mirror.centos.org/centos/6/os/x86_64/Packages/rrdtool-1.3.8-6.el6.x86_64.rpm"
+
+# xfsprogs
+
+XFSPROGS_RPM5_64="ftp://ftp.pbone.net/mirror/ftp.freshrpms.net/pub/freshrpms/pub/freshrpms/redhat/testing/EL5/xfs/x86_64/xfsprogs-2.9.4-4.el5/xfsprogs-2.9.4-4.el5.x86_64.rpm"
+XFSPROGS_RPM6_64="ftp://ftp.pbone.net/mirror/ftp.centos.org/6.3/os/x86_64/Packages/xfsprogs-3.1.1-7.el6.x86_64.rpm"
+
 
 log="/var/log/cloudoptimizer-install.log"
 
@@ -79,11 +227,12 @@ rundir=`pwd "${BASH_SOURCE[0]}"`
 #############
 
 # guessdist()
-# Simple check to see if we are running on a supported version
+# Check to see if we are running on a supported version
 guessdist() {
     if [ "$forcedist" == "1" ] && [ "$forcever" == "1" ]; then
         distro="$force_distro"
         version="$force_version"
+        ddesc="User Defined"
         message "You have chosen to force the Linux distribution and version." warning
         message "You should not continue unless you know what you are doing.  Forcing the distribution could leave your system in an unstable state." warning
         message "You have specified the distribution \"$distro\" and the version \"$version\"."
@@ -101,9 +250,11 @@ guessdist() {
             version=`lsb_release -sr`
             ddistro=`lsb_release -sd |cut -d" " -f1`
             dversion=`lsb_release -sd |cut -d" " -f2`
+            ddesc=`lsb_release -sd`
         else
             issuelen=`head -n1 /etc/issue |wc -w`
             distro=`head -n1 /etc/issue |cut -d" " -f1`
+            ddistro="$distro"
             if [ "$distro" == "Debian" ]; then
                 version=`head -n1 /etc/debian_version`
             elif [ "$distro" == "Fedora" ]; then
@@ -116,9 +267,10 @@ guessdist() {
         fi
     fi
     
-    if [ "$ddistro" == "Snowlinux" ]; then
-        distro="$ddistro"
-        version="$dversion"
+    if [ "$ddistro" != "$distro" ]; then
+        deriv="$ddistro $dversion"
+    else
+        deriv="$distro"
     fi
     
     majorver=`echo "$version" |cut -d. -f1`
@@ -260,14 +412,10 @@ message() {
             echo -e "\e[7mERROR:\e[27m ${1}" |cut -c $from_cut-$to_cut
         elif [ "$2" == "warning" ]; then
             echo -e "\e[7mWarning:\e[27m ${1}" |cut -c $from_cut-$to_cut
-        elif [ "$2" == "prompt" ] && [ "$3" != "force" ]; then
-            if [ "$skipyesno" == "0" ]; then
-                echo -n -e "\033[1m${1}\033[0m" |cut -c $from_cut-$to_cut |tr -d '\n'
-            fi
-        elif [ "$2" == "prompt" ] && [ "$3" == "force" ]; then
-            if [ "$force" == "0" ]; then
-                echo -n -e "\033[1m${1}\033[0m" |cut -c $from_cut-$to_cut |tr -d '\n'
-            fi
+        elif [ "$2" == "prompt" ] && [ "$3" == "force" ] && [ "$force" == "0" ]; then
+            echo -n -e "\033[1m${1}\033[0m" |cut -c $from_cut-$to_cut |tr -d '\n'
+        elif [ "$2" == "prompt" ] && [ "$skipyesno" == "0" ]; then
+            echo -n -e "\033[1m${1}\033[0m" |cut -c $from_cut-$to_cut |tr -d '\n'
         elif [ "$2" == "action" ]; then
             echo -n "${1}...  " |cut -c $from_cut-$to_cut |tr -d '\n'
         elif [ "$2" == "status" ]; then
@@ -286,11 +434,11 @@ message() {
 
 install_apt() {
     message "Installing cloudoptimizer-tools package" action
-    apt-get -qqy install cloudoptimizer-tools=$cver >>$log 2>&1 && message "OK" status || die "Could not install Cloudoptimizer Tools! Exiting."
+    apt-get -qqy install cloudoptimizer-tools=$vlabel >>$log 2>&1 && message "OK" status || die "Could not install Cloudoptimizer Tools! Exiting."
     message "Installing cloudoptimizer package" action
-    apt-get -qqy install cloudoptimizer=$cver >>$log 2>&1 && message "OK" status || die "Could not install Cloudoptimizer! Exiting."
+    apt-get -qqy install cloudoptimizer=$vlabel >>$log 2>&1 && message "OK" status || die "Could not install Cloudoptimizer! Exiting."
     message "Installing cloudoptimizer-webui package" action
-    apt-get -qqy install cloudoptimizer-webui=$cver >>$log 2>&1 && message "OK" status || die "Could not install Cloudoptimizer WebUI! Exiting."
+    apt-get -qqy install cloudoptimizer-webui=$vlabel >>$log 2>&1 && message "OK" status || die "Could not install Cloudoptimizer WebUI! Exiting."
 }
 
 remove_apt() {
@@ -345,22 +493,11 @@ remove_apt() {
 
 install_yum() {
     message "Installing cloudoptimizer-tools package" action
-    yum -q -y install cloudoptimizer-tools-$cver >>$log 2>&1 && message "OK" status || die "Could not install Cloudoptimizer Tools! Exiting."
+    yum -q -y install cloudoptimizer-tools-$supports_ver >>$log 2>&1 && message "OK" status || die "Could not install Cloudoptimizer Tools! Exiting."
     message "Installing cloudoptimizer package" action
-    yum -q -y install cloudoptimizer-$cver >>$log 2>&1 && message "OK" status || die "Could not install Cloudoptimizer! Exiting."
+    yum -q -y install cloudoptimizer-$supports_ver >>$log 2>&1 && message "OK" status || die "Could not install Cloudoptimizer! Exiting."
     message "Installing cloudoptimizer-webui package" action
-    yum -q -y install cloudoptimizer-webui-$cver >>$log 2>&1 && message "OK" status || die "Could not install Cloudoptimizer WebUI! Exiting."
-}
-
-install_yast() {
-    message "Downloading CloudOptimizer packages..."
-    download $repopath/$tpkg && download $repopath/$mpkg && download $repopath/$wpkg
-    message "Installing cloudoptimizer-tools package" action
-    yast -i $tpkg && message "OK" status || die "Could not install Cloudoptimizer Tools! Exiting."
-    message "Installing cloudoptimizer package" action
-    yast -i $mpkg 2>&1 && message "OK" status || die "Could not install Cloudoptimizer! Exiting."
-    message "Installing cloudoptimizer-webui package" action
-    yast -i $wpkg 2>&1 && message "OK" status || die "Could not install Cloudoptimizer WebUI! Exiting."
+    yum -q -y install cloudoptimizer-webui-$supports_ver >>$log 2>&1 && message "OK" status || die "Could not install Cloudoptimizer WebUI! Exiting."
 }
 
 remove_yum() {
@@ -417,65 +554,12 @@ remove_yum() {
     fi
 }
 
-remove_rpm() {
-    message " Remove CloudOptimizer? (y/n) " prompt
-    if ! yesno
-        then die "Failed to remove CloudOptimizer.  Exiting."
-    fi
-    message "Removing CloudOptimizer..."
-    if [ "$purge" == "1" ]; then
-        message "Purging will remove files that you have changed since installation." warning
-        message " Proceed? (y/n) " prompt force
-        if !  yesno force
-            then die "Install cancelled."
-        fi
-        command -v cloudconfig >>$log 2>&1 && homedir=`cloudconfig get /config/home` || message "Couldn't determine home directory.  Continuing anyway.  You might need to do some manual cleanup." warning
-        command -v cloudconfig >>$log 2>&1 && logdir=`cloudconfig get /config/log_dir` || message "Couldn't determine log directory.  Continuing anyway.  You might need to do some manual cleanup." warning
-        message "Removing cloudoptimizer-webui" action
-        rpm -e cloudoptimizer-webui >>$log 2>&1 && message "OK" status || message "Could not remove CloudOptimizer WebUI! You might need to do some manual cleanup." warning
-        message "Removing cloudoptimizer" action
-        rpm -e cloudoptimizer >>$log 2>&1 && message "OK" status || message "Could not remove CloudOptimizer! You might need to do some manual cleanup." warning
-        message "Removing cloudoptimizer-tools" action
-        rpm -e cloudoptimizer-tools >>$log 2>&1 && message "OK" status || message "Could not remove CloudOptimizer Tools! You might need to do some manual cleanup." warning
-        message "Removing CloudOptimizer home directory" action
-        rm -rf $homedir && message "OK" status || message "Couldn't remove home directory.  You might need to do some manual cleanup." warning
-        message "Removing /etc/cloudoptimizer" action
-        rm -rf /etc/cloudoptimizer && message "OK" status || message "Couldn't remove /etc/cloudoptimizer! You might need to do some manual cleanup." warning
-        message "Removing /var/run/cloudopt-webserver" action
-        rm -rf /var/run/cloudopt-webserver && message "OK" status || message "Couldn't remove /var/run/cloudopt-webserver! You might need to do some manual cleanup." warning
-        message "Removing cores" action
-        rm -f /var/crash/cloudopt* && message "OK" status || message "Couldn't remove cores!  You might need to do some manual cleanup." warning
-        message "Removing /var/log/cloudoptimizer" action
-        rm -rf $logdir && message "OK" status || message "Couldn't remove log directory.  You might need to do some manual cleanup." warning
-        message "Removing init scripts" action
-        rm -f /etc/init.d/cloudoptimizer* && message "OK" status || message "Couldn't remove init scripts.  You might need to do some manual cleanup." warning
-        if [ "$distro" == "Mageia" ]; then
-            repodir="/etc/yum/repos.d"
-        elsen
-            repodir="/etc/yum.repos.d"
-        fi
-        existing_repos=(`find $repodir | egrep [Cc]loud[Oo]pt`)
-        for existing_repo in ${existing_repos[@]}; do
-            message "Removing repo ${existing_repo}" action 
-            rm ${existing_repo} && message "OK" status || message "Could not remove ${existing_repo}! You might need to do some manual cleanup." warning
-        done
-    else
-        message "Removing cloudoptimizer-webui" action
-        rpm -e cloudoptimizer-webui >>$log 2>&1 && message "OK" status || message "Could not remove CloudOptimizer WebUI! You might need to do some manual cleanup." warning
-        message "Removing cloudoptimizer" action
-        rpm -e cloudoptimizer >>$log 2>&1 && message "OK" status || message "Could not remove CloudOptimizer! You might need to do some manual cleanup." warning
-        message "Removing cloudoptimizer-tools" action
-        rpm -e cloudoptimizer-tools >>$log 2>&1 && message "OK" message || die "Could not remove CloudOptimizer Tools! You might need to do some manual cleanup." warning
-    fi
-}
-
-install_rpm() {
+install_deps_rpm() {
     if [ "$manifest" == "1" ]; then
         averb="Finding"
     else
         averb="Installing"
     fi
-    rpm_cmd="rpm"
     if [ "$local" == "1" ]; then
         # Install / obtain dependencies
         num_packages=${#dep_packages[@]}
@@ -489,9 +573,35 @@ install_rpm() {
                 download $rundir/$pkg_name
                 message "$averb $pkg_name package" action
                 pkg_short_name=`rpm --qf "%{NAME}\n" -qp $rundir/$pkg_name`
-                rpm -q $pkg_short_name >>$log 2>&1 || $rpm_cmd -i $rundir/$pkg_name >>$log 2>&1 && message "OK" status || die "Could not install $pkg_name! Exiting."
+                rpm -q $pkg_short_name >>$log 2>&1 || rpm -i $rundir/$pkg_name >>$log 2>&1 && message "OK" status || die "Could not install $pkg_name! Exiting."
             fi
         done
+    else
+        num_packages=${#dep_packages[@]}
+        for (( i = 0; i < $num_packages; i++)); do
+            pkg_url=${dep_packages[i]}
+            pkg_name=`basename ${dep_packages[i]}`
+            if [ "$manifest" == "1" ]; then
+                message "$averb $pkg_name package" action
+                echo "wget $pkg_url" >>$dl_script && echo "tar -rf cloudoptimizer-packages.tar $pkg_name" >>$dl_script && message "OK" status || die "Could not write to script! Exiting."
+            else
+                download $pkg_url
+                message "$averb $pkg_name package" action
+                pkg_short_name=`rpm --qf "%{NAME}\n" -qp $pkg_name`
+                rpm -q $pkg_short_name >>$log 2>&1 || rpm -i $pkg_name >>$log 2>&1 && message "OK" status || die "Could not install $pkg_name! Exiting."
+            fi
+        done
+    fi
+}
+
+install_rpm() {
+    if [ "$manifest" == "1" ]; then
+        averb="Finding"
+    else
+        averb="Installing"
+    fi
+    rpm_cmd="rpm"
+    if [ "$local" == "1" ]; then
         # Install / obtain cloudoptimizer-tools
         if [ "$manifest" == "1" ]; then
             message "$averb cloudoptimizer-tools package" action
@@ -520,6 +630,48 @@ install_rpm() {
             rpm -q cloudoptimizer-webui >>$log 2>&1 || $rpm_cmd -i $rundir/$wpkg >>$log 2>&1 && message "OK" status || die "Could not install Cloudoptimizer WebUI ($wpkg)! Exiting."
         fi
     else
+        message "Installing cloudoptimizer-tools package" action
+        $rpm_cmd -Uvh $repopath/$tpkg && message "OK" status || die "Could not install Cloudoptimizer Tools! Exiting."
+        message "Installing cloudoptimizer package" action
+        $rpm_cmd -Uvh $repopath/$mpkg && message "OK" status || die "Could not install Cloudoptimizer! Exiting."
+        message "Installing cloudoptimizer-webui package" action
+        $rpm_cmd -Uvh $repopath/$wpkg && message "OK" status || die "Could not install Cloudoptimizer WebUI! Exiting."
+    fi
+}
+
+install_deps_gdebi() {
+    command -v gdebi >>$log 2>&1 && gdebi=1 || gdebi=0
+    if [ "$gdebi" == "0" ]; then
+        message "We need to install and use gdebi-core in order to install on this version of Linux." warning
+        message " Would you like us to install it now? (y/n) " prompt
+        if ! yesno
+            then die "We can't install without gdebi.  Exiting."
+        fi
+        message "Installing gdebi-core" action
+        apt-get -qqy install gdebi-core >>$log 2>&1 && message "OK" status || die "Could not install gdebi-core!  Exiting."
+    fi
+    if [ "$manifest" == "1" ]; then
+        averb="Finding"
+    else
+        averb="Installing"
+    fi
+    if [ "$local" == "1" ]; then
+        # Install / obtain dependencies
+        num_packages=${#dep_packages[@]}
+        for (( i = 0; i < $num_packages; i++)); do
+            pkg_url=${dep_packages[i]}
+            pkg_name=`basename ${dep_packages[i]}`
+            if [ "$manifest" == "1" ]; then
+                message "$averb $pkg_name package" action
+                echo "wget $pkg_url" >>$dl_script && echo "tar -rf cloudoptimizer-packages.tar $pkg_name" >>$dl_script && message "OK" status || die "Could not write to script! Exiting."
+            else
+                download $rundir/$pkg_name
+                message "$averb $pkg_name package" action
+                pkg_short_name=`dpkg -f $rundir/$pkg_name Package`
+                dpkg-query -W $pkg_short_name >>$log 2>&1 || gdebi --n --q $rundir/$pkg_name >>$log 2>&1 && message "OK" status || die "Could not install $pkg_name! Exiting."
+            fi
+        done
+    else
         num_packages=${#dep_packages[@]}
         for (( i = 0; i < $num_packages; i++)); do
             pkg_url=${dep_packages[i]}
@@ -530,22 +682,10 @@ install_rpm() {
             else
                 download $pkg_url
                 message "$averb $pkg_name package" action
-                pkg_short_name=`rpm --qf "%{NAME}\n" -qp $pkg_name`
-                rpm -q $pkg_short_name >>$log 2>&1 || $rpm_cmd -i $pkg_name >>$log 2>&1 && message "OK" status || die "Could not install $pkg_name! Exiting."
+                pkg_short_name=`dpkg -f $pkg_name Package`
+                dpkg-query -W $pkg_short_name >>$log 2>&1 || gdebi --n --q $pkg_name >>$log 2>&1 && message "OK" status || die "Could not install $pkg_name! Exiting."
             fi
         done
-        if [ -f /etc/monitrc ]; then
-            ln -s /etc/monitrc /etc/monit.conf
-        fi
-        if [ -f /etc/init.d/syslog ]; then
-            ln -s /etc/init.d/syslog /etc/init.d/rsyslog
-        fi
-        message "Installing cloudoptimizer-tools package" action
-        $rpm_cmd -Uvh $repopath/$tpkg && message "OK" status || die "Could not install Cloudoptimizer Tools! Exiting."
-        message "Installing cloudoptimizer package" action
-        $rpm_cmd -Uvh $repopath/$mpkg && message "OK" status || die "Could not install Cloudoptimizer! Exiting."
-        message "Installing cloudoptimizer-webui package" action
-        $rpm_cmd -Uvh $repopath/$wpkg && message "OK" status || die "Could not install Cloudoptimizer WebUI! Exiting."
     fi
 }
 
@@ -559,17 +699,6 @@ install_gdebi() {
         fi
         message "Installing gdebi-core" action
         apt-get -qqy install gdebi-core >>$log 2>&1 && message "OK" status || die "Could not install gdebi-core!  Exiting."
-    fi
-    if [ "$version" == "12.10" ] || [ "$version" == "13.04" ] || [ "$version" == "14" ]; then
-        download $LIBTCMALLOC_MINIMAL0_DEB12_64
-        message "Installing `basename $LIBTCMALLOC_MINIMAL0_DEB12_64`" action
-        gdebi --n --q `basename $LIBTCMALLOC_MINIMAL0_DEB12_64` >>$log 2>&1 && message "OK" status || die "Could not install `basename $LIBTCMALLOC_MINIMAL0_DEB12_64`!  Exiting."
-        download $LIBUNWIND7_DEB12_64
-        message "Installing `basename $LIBUNWIND7_DEB12_64`" action
-        gdebi --n --q `basename $LIBUNWIND7_DEB12_64` >>$log 2>&1 && message "OK" status || die "Could not install `basename $LIBUNWIND7_DEB12_64`!  Exiting."
-        download $LIBGOOGLE_PERFTOOLS0_DEB12_64
-        message "Installing `basename $LIBGOOGLE_PERFTOOLS0_DEB12_64`" action
-        gdebi --n --q `basename $LIBGOOGLE_PERFTOOLS0_DEB12_64` >>$log 2>&1 && message "OK" status || die "Could not install `basename $LIBGOOGLE_PERFTOOLS0_DEB12_64`!  Exiting."
     fi
     message "Downloading CloudOptimizer packages..."
     download $repopath/$tpkg && download $repopath/$mpkg && download $repopath/$wpkg
@@ -586,8 +715,6 @@ install_gdebi() {
 #   Main Script  #
 ##################
 
-message "CloudOptimizer Linux Client Installer version $INSTALLER_VERSION" title
-
 # Check for bash
 (( true )) && message "This script requires bash! Don't use sh!" error && exit 1
 
@@ -596,6 +723,8 @@ id | grep "uid=0(" >>$log
 if [ "$?" != "0" ]; then
     die "The Cloudoptimizer install script must be run as root" error
 fi
+
+message "CloudOptimizer Linux Client Installer version $INSTALLER_VERSION" title
 
 # Check whether /tmp is mounted noexec (everything will fail, if so)
 TMPNOEXEC=`grep /tmp /etc/mtab | grep noexec`
@@ -631,6 +760,7 @@ fi
 cd $tempdir
 
 # Options defaults
+is_supported=0
 accepteula=0
 skipyesno=0
 onlycheck=0
@@ -656,6 +786,19 @@ while [ "$1" != "" ]; do
         flagarg="null"
     fi
     case $1 in
+        --accept-eula|-e)
+            accepteula=1
+        ;;
+        --auto|-a)
+            accepteula=1
+            force=1
+            skipyesno=1
+            noupdate=1
+        ;;
+        --check|-c)
+            skipyesno=1
+            onlycheck=1
+        ;;
         --distro)
             if [ "$flagarg" == "null" ]; then
                 showhelp
@@ -665,14 +808,31 @@ while [ "$1" != "" ]; do
                 force_distro="$flagarg"
             fi
         ;;
-        --version)
-            if [ "$flagarg" == "null" ]; then
-                showhelp
-                die "Bad argument for $1"
-            else
-                forcever=1
-                force_version="$flagarg"
-            fi
+        --force|-f)
+            skipyesno=1
+            force=1
+        ;;
+        --help|-h)
+            showhelp
+            exit 0
+        ;;
+        --local|-l)
+            noupdate=1
+            local=1
+        ;;
+        --manifest|-m)
+            noupdate=1
+            local=1
+            manifest=1
+            dl_script="$rundir/cloudoptimizer-download.sh"
+            echo "#!/bin/sh" >$dl_script
+            echo "tar -c -T /dev/null -f cloudoptimizer-packages.tar" >>$dl_script
+        ;;
+        --noclean)
+            noclean=1
+        ;;
+        --noupdate|-n)
+            noupdate=1
         ;;
         --password)
             if [ "$flagarg" == "null" ]; then
@@ -683,63 +843,24 @@ while [ "$1" != "" ]; do
                 ui_password="$flagarg"
             fi
         ;;
-        --help|-h)
-            showhelp
-            exit 0
-        ;;
-        --auto|-a)
-            accepteula=1
-            force=1
-            skipyesno=1
-            noupdate=1
-        ;;
-        --accept-eula|-e)
-            accepteula=1
-        ;;
-        --check|-c)
-            skipyesno=1
-            onlycheck=1
-        ;;
-        --force|-f)
-            skipyesno=1
-            force=1
-        ;;
-        --yes|-y)
-            skipyesno=1
-        ;;
-        --noclean)
-            noclean=1
-        ;;
-        --noupdate|-n)
-            noupdate=1
-        ;;
-        --testing)
-            testing=1
-        ;;
-        --reposonly|-r)
-            reposonly=1
-        ;;
         --previous|-p)
             previous=1
-        ;;
-        --remove|-u)
-            remove=1
-        ;;
-        --manifest|-m)
-            noupdate=1
-            local=1
-            manifest=1
-            dl_script="$rundir/cloudoptimizer-download.sh"
-            echo "#!/bin/sh" >$dl_script
-            echo "tar -c -T /dev/null -f cloudoptimizer-packages.tar" >>$dl_script
         ;;
         --purge|-x)
             remove=1
             purge=1
         ;;
-        --local|-l)
-            noupdate=1
-            local=1
+        --remove|-u)
+            remove=1
+        ;;
+        --reposonly|-r)
+            reposonly=1
+        ;;
+        --support|-s)
+            tar -cz $TMPDIR/.cloudopt-* $log > $TMPDIR/co-support.tgz \
+              && message "${TMPDIR}/co-support.tgz file created. E-mail this to support@cloudopt.com" \
+              || message "Something broke, e-mail support@cloudopt.com for help!" error
+            exit 0
         ;;
         --tarball|-t)
             tarball=1
@@ -752,11 +873,20 @@ while [ "$1" != "" ]; do
                 die "Didn't find cloudoptimizer-packages.tar.gz in $rundir"
             fi
         ;;
-        --support|-s)
-            tar -cz $TMPDIR/.cloudopt-* $log > $TMPDIR/co-support.tgz \
-              && message "${TMPDIR}/co-support.tgz file created. E-mail this to support@cloudopt.com" \
-              || message "Something broke, e-mail support@cloudopt.com for help!" error
-            exit 0
+        --testing)
+            testing=1
+        ;;
+        --version)
+            if [ "$flagarg" == "null" ]; then
+                showhelp
+                die "Bad argument for $1"
+            else
+                forcever=1
+                force_version="$flagarg"
+            fi
+        ;;
+        --yes|-y)
+            skipyesno=1
         ;;
         *)
             message "Unrecognized flag."
@@ -772,12 +902,23 @@ while [ "$1" != "" ]; do
 done
 
 # Check to make sure installer is up to date
-if [ $noupdate != 1 ]; then
+if [ "$noupdate" != "1" ]; then
     download "http://kb.cloudopt.com/instver.txt" silent
     instver=`cat instver.txt`
-    if [ $instver != $INSTALLER_VERSION ]; then
-      message "This installer is out of date." error
-      die "Please download a new copy at http://kb.cloudopt.com/cloudoptimizer-install.sh.gz or run again with --noupdate."
+    if [ "$instver" != "$INSTALLER_VERSION" ]; then
+        message "This installer is out of date." warning
+        message " Do you want to download the update now? (y/n) " prompt
+        if ! yesno force
+            then die "Please download a new copy at http://kb.cloudopt.com/cloudoptimizer-install.sh.gz or run again with --noupdate."
+        fi
+        cd $rundir
+        message "Backing up the existing script" action
+        mv cloudoptimizer-install.sh cloudoptimizer-install-$INSTALLER_VERSION.sh && message "OK" status || die "Couldn't back up existing script."
+        download http://kb.cloudopt.com/cloudoptimizer-install.sh.gz
+        message "Unpacking install script" action
+        gunzip cloudoptimizer-install.sh.gz && message "OK" status || die "Couldn't unpack the installer."
+        message "The script has been updated and will now exit.  Run it again to use the updated version."
+        exit 0
     else
       message "Installer version $INSTALLER_VERSION is up to date."
     fi
@@ -786,584 +927,456 @@ fi
 # Guess the distro and version
 guessdist
 
-# Handle x86_64 vs amd64
-if [ "$arch" == "x86_64" ]; then
-     parch="amd64"
-else
-     parch="$arch"
-fi
-
-# Find the right version to install
-is_supported=0
+# Classify Linux distributions
+# This is where you add new distros to the script
 case $distro in
-    Ubuntu)
-        os_type="ubuntu"
-        case $version in
-            10.04|11.04|11.10)
-                if [ $arch = "x86_64" ]; then
-                    if [ "$testing" = "1" ]; then
-                        is_supported=1
-                        supports_ver=$CLOUDOPTIMIZER_TESTING_VERSION
-                        cver=$CLOUDOPTIMIZER_TEST_DEB10_64_LABEL
-                    elif [ "$previous" = "1" ]; then
-                        is_supported=1
-                        supports_ver=$CLOUDOPTIMIZER_PREVIOUS_VERSION
-                        cver=$CLOUDOPTIMIZER_PREV_DEB10_64_LABEL
-                    else 
-                        is_supported=1
-                        supports_ver=$CLOUDOPTIMIZER_CURRENT_VERSION
-                        cver=$CLOUDOPTIMIZER_DEB10_64_LABEL
-                    fi
-                elif [ "$arch" = "i386" ]; then
-                    is_supported=1
-                    supports_ver="1.1.7"
-                    cver=$CLOUDOPTIMIZER_DEB10_32_LABEL
-                else
-                    is_supported=0
-                fi
-            ;;
-            12.04|12.10|13.04)
-                if [ "$arch" = "x86_64" ]; then
-                    if [ "$testing" = "1" ]; then
-                        is_supported=1
-                        supports_ver=$CLOUDOPTIMIZER_TESTING_VERSION
-                        cver=$CLOUDOPTIMIZER_TEST_DEB12_64_LABEL
-                    elif [ "$previous" = "1" ]; then
-                        is_supported=1
-                        supports_ver=$CLOUDOPTIMIZER_PREVIOUS_VERSION
-                        cver=$CLOUDOPTIMIZER_PREV_DEB12_64_LABEL
-                    else
-                        is_supported=1
-                        supports_ver=$CLOUDOPTIMIZER_CURRENT_VERSION
-                        cver=$CLOUDOPTIMIZER_DEB12_64_LABEL
-                    fi
-                elif [ "$arch" = "i386" ]; then
-                    is_supported=1
-                    supports_ver="1.1.7"
-                    cver=$CLOUDOPTIMIZER_DEB12_32_LABEL
-                else
-                    is_supported=0
-                fi
-            ;;
-            10.10)
-                die "CloudOpt has tested Ubuntu version 10.10 and determined that CloudOptimizer cannot be installed successfully at this time."
-            ;;
-            *)
-                is_supported=0
-            ;;
-        esac
-        mpkg="cloudoptimizer_${cver}_${parch}.deb"
-        wpkg="cloudoptimizer-webui_${cver}_${parch}.deb"
-        tpkg="cloudoptimizer-tools_${cver}_${parch}.deb"
-    ;;
-    LinuxDeepin)
-        os_type="ubuntu"
-        case $version in
-            12.06)
-                if [ $arch = "x86_64" ]; then
-                    if [ "$testing" = "1" ]; then
-                        is_supported=1
-                        supports_ver=$CLOUDOPTIMIZER_TESTING_VERSION
-                        cver=$CLOUDOPTIMIZER_TEST_DEB10_64_LABEL
-                    elif [ "$previous" = "1" ]; then
-                        is_supported=1
-                        supports_ver=$CLOUDOPTIMIZER_PREVIOUS_VERSION
-                        cver=$CLOUDOPTIMIZER_PREV_DEB10_64_LABEL
-                    else 
-                        is_supported=1
-                        supports_ver=$CLOUDOPTIMIZER_CURRENT_VERSION
-                        cver=$CLOUDOPTIMIZER_DEB10_64_LABEL
-                    fi
-                elif [ "$arch" = "i386" ]; then
-                    is_supported=0
-                fi
-            ;;
-            *)
-                is_supported=0
-            ;;
-        esac
-        mpkg="cloudoptimizer_${cver}_${parch}.deb"
-        wpkg="cloudoptimizer-webui_${cver}_${parch}.deb"
-        tpkg="cloudoptimizer-tools_${cver}_${parch}.deb"
-    ;;
-    CentOS)
-        os_type="rhel"
-        case $version in
-            5.4|5.5|5.6|5.7|5.8)
-                if [ "$arch" = "x86_64" ]; then
-                    if [ "$testing" = "1" ]; then 
-                        is_supported=1
-                        supports_ver=$CLOUDOPTIMIZER_TESTING_VERSION
-                        cver=$CLOUDOPTIMIZER_TEST_RPM5_64_LABEL
-                    elif [ "$previous" = "1" ]; then
-                        is_supported=1
-                        supports_ver=$CLOUDOPTIMIZER_PREVIOUS_VERSION
-                        cver=$CLOUDOPTIMIZER_PREV_RPM5_64_LABEL
-                    else
-                        is_supported=1
-                        supports_ver=$CLOUDOPTIMIZER_CURRENT_VERSION
-                        cver=$CLOUDOPTIMIZER_RPM5_64_LABEL
-                    fi
-                    dep_packages=($LIBNET_RPM5_64)
-                    dep_packages+=($LIBNET_DEVEL_RPM5_64)
-                    dep_packages+=($LIBNETFILTER_QUEUE_RPM5_64)
-                    dep_packages+=($LIBNETFILTER_QUEUE_SO_1_RPM5_64)
-                    dep_packages+=($LIBNFNETLINK_RPM5_64)
-                    dep_packages+=($LIBNFNETLINK_SO_0_RPM5_64)
-                    dep_packages+=($NC_RPM5_64)
-                    dep_packages+=($MONIT_5_1_1_RPM5_64)
-                    dep_packages+=($GPERFTOOLS_LIBS_RPM5_64)
-                    dep_packages+=($DEJAVU_FONTS_COMMON_RPM5_64)
-                    dep_packages+=($DEJAVU_LGC_SANS_MONO_FONTS_RPM5_64)
-                    dep_packages+=($DEJAVU_SANS_MONO_FONTS_RPM5_64)
-                    dep_packages+=($FONTPACKAGES_FILESYSTEM_RPM5_64)
-                    dep_packages+=($RRDTOOL_RPM5_64)
-                    dep_packages+=($COLLECTD_RRDTOOL_RPM5_64)
-                elif [ "$arch" = "i386" ]; then
-                    is_supported=0
-                    supports_ver="1.1.5"
-                    cver=$CLOUDOPTIMIZER_RPM5_32_LABEL
-                else
-                    is_supported=0
-                fi
-            ;;
-            6.0|6.2|6.3)
-                if [ "$arch" = "x86_64" ]; then
-                    if [ "$testing" = "1" ]; then
-                        is_supported=1
-                        supports_ver=$CLOUDOPTIMIZER_TESTING_VERSION
-                        cver=$CLOUDOPTIMIZER_TEST_RPM6_64_LABEL
-                    elif [ "$previous" = "1" ]; then
-                        is_supported=1
-                        supports_ver=$CLOUDOPTIMIZER_PREVIOUS_VERSION
-                        cver=$CLOUDOPTIMIZER_PREV_RPM6_64_LABEL
-                    else
-                        is_supported=1
-                        supports_ver=$CLOUDOPTIMIZER_CURRENT_VERSION
-                        cver=$CLOUDOPTIMIZER_RPM6_64_LABEL
-                    fi
-                    dep_packages=($LIBNET_RPM6_64)
-                    dep_packages+=($LIBNET_DEVEL_RPM6_64)
-                    dep_packages+=($LIBNETFILTER_QUEUE_RPM6_64)
-                    dep_packages+=($LIBNETFILTER_QUEUE_SO_1_RPM6_64)
-                    dep_packages+=($LIBNFNETLINK_RPM6_64)
-                    dep_packages+=($LIBNFNETLINK_SO_0_RPM6_64)
-                    dep_packages+=($NC_RPM6_64)
-                    dep_packages+=($MONIT_5_1_1_RPM6_64)
-                    dep_packages+=($GPERFTOOLS_LIBS_RPM6_64)
-                    dep_packages+=($DEJAVU_FONTS_COMMON_RPM6_64)
-                    dep_packages+=($DEJAVU_LGC_SANS_MONO_FONTS_RPM6_64)
-                    dep_packages+=($DEJAVU_SANS_MONO_FONTS_RPM6_64)
-                    dep_packages+=($FONTPACKAGES_FILESYSTEM_RPM6_64)
-                    dep_packages+=($RRDTOOL_RPM6_64)
-                    dep_packages+=($COLLECTD_RRDTOOL_RPM6_64)
-                else
-                    is_supported=0
-                fi
-            ;;
-
-            *)
-                is_supported=0
-            ;;
-        esac
-        mpkg="cloudoptimizer-${cver}.${arch}.rpm"
-        wpkg="cloudoptimizer-webui-${cver}.${arch}.rpm"
-        tpkg="cloudoptimizer-tools-${cver}.${arch}.rpm"
-    ;;
-    Scientific)
-        os_type="rhel"
-        case $version in
-            5.8)
-                if [ "$arch" = "x86_64" ]; then
-                    if [ "$testing" = "1" ]; then
-                        is_supported=1
-                        supports_ver=$CLOUDOPTIMIZER_TESTING_VERSION
-                        cver=$CLOUDOPTIMIZER_TEST_RPM5_64_LABEL
-                    elif [ "$previous" = "1" ]; then
-                        is_supported=1 
-                        supports_ver=$CLOUDOPTIMIZER_PREVIOUS_VERSION
-                        cver=$CLOUDOPTIMIZER_PREV_RPM5_64_LABEL
-                    else
-                        is_supported=1
-                        supports_ver=$CLOUDOPTIMIZER_CURRENT_VERSION
-                        cver=$CLOUDOPTIMIZER_RPM5_64_LABEL
-                    fi
-                elif [ "$arch" = "i386" ]; then
-                    is_supported=0
-                    supports_ver="1.1.5"
-                    cver=$CLOUDOPTIMIZER_RPM5_32_LABEL
-                else
-                    is_supported=0
-                fi
-            ;;
-            6.2|6.3)
-                if [ "$arch" = "x86_64" ]; then
-                    if [ "$testing" = "1" ]; then
-                        is_supported=1
-                        supports_ver=$CLOUDOPTIMIZER_TESTING_VERSION
-                        cver=$CLOUDOPTIMIZER_TEST_RPM6_64_LABEL
-                    elif [ "$previous" = "1" ]; then
-                        is_supported=1
-                        supports_ver=$CLOUDOPTIMIZER_PREVIOUS_VERSION
-                        cver=$CLOUDOPTIMIZER_PREV_RPM6_64_LABEL
-                    else
-                        is_supported=1
-                        supports_ver=$CLOUDOPTIMIZER_CURRENT_VERSION
-                        cver=$CLOUDOPTIMIZER_RPM6_64_LABEL
-                    fi
-                else
-                    is_supported=0
-                fi
-            ;;
-
-            *)
-                is_supported=0
-            ;;
-        esac
-        mpkg="cloudoptimizer-${cver}.${arch}.rpm"
-        wpkg="cloudoptimizer-webui-${cver}.${arch}.rpm"
-        tpkg="cloudoptimizer-tools_${cver}.${arch}.rpm"
-    ;;
     Amazon)
-        os_type="rhel"
         case $version in
             2011.09|2012.03|2012.09)
-                if [ "$arch" = "x86_64" ]; then
-                    if [ "$testing" = "1" ]; then
-                        is_supported=1
-                        supports_ver=$CLOUDOPTIMIZER_TESTING_VERSION
-                        cver=$CLOUDOPTIMIZER_TEST_RPM6_64_LABEL
-                    elif [ "$previous" = "1" ]; then
-                        is_supported=1
-                        supports_ver=$CLOUDOPTIMIZER_PREVIOUS_VERSION
-                        cver=$CLOUDOPTIMIZER_PREV_RPM6_64_LABEL
-                    else
-                        is_supported=1
-                        supports_ver=$CLOUDOPTIMIZER_CURRENT_VERSION
-                        cver=$CLOUDOPTIMIZER_RPM6_64_LABEL
-                    fi
-                elif [ "$arch" = "i386" ]; then
-                    is_supported=0
+                if [ "$local" == "1" ]; then
+                    inst_type="RPM6_MANUAL"
                 else
-                    is_supported=0
+                    inst_type="RPM6_AUTO"
                 fi
             ;;
-            *)
-                is_supported=0
-            ;;
         esac
-        mpkg="cloudoptimizer-${cver}.${arch}.rpm"
-        wpkg="cloudoptimizer-webui-${cver}.${arch}.rpm"
-        tpkg="cloudoptimizer-tools-${cver}.${arch}.rpm"
     ;;
-    Oracle)
-        os_type="rhel"
-        case $version in
-            5.6|5.8)
-                if [ "$arch" = "x86_64" ]; then
-                    if [ "$testing" = "1" ]; then
-                        is_supported=1
-                        supports_ver=$CLOUDOPTIMIZER_TESTING_VERSION
-                        cver=$CLOUDOPTIMIZER_TEST_RPM5_64_LABEL
-                    elif [ "$previous" = "1" ]; then
-                        is_supported=1
-                        supports_ver=$CLOUDOPTIMIZER_PREVIOUS_VERSION
-                        cver=$CLOUDOPTIMIZER_PREV_RPM5_64_LABEL
-                    else
-                        is_supported=1
-                        supports_ver=$CLOUDOPTIMIZER_CURRENT_VERSION
-                        cver=$CLOUDOPTIMIZER_RPM5_64_LABEL
-                    fi
-                elif [ "$arch" = "i386" ]; then
-                    is_supported=0
-                    supports_ver="1.1.5"
-                    cver=$CLOUDOPTIMIZER_RPM5_32_LABEL
-                else
-                    is_supported=0
-                fi
-            ;;
-            6.3)
-                if [ "$arch" = "x86_64" ]; then
-                    if [ "$testing" = "1" ]; then
-                        is_supported=1
-                        supports_ver=$CLOUDOPTIMIZER_TESTING_VERSION
-                        cver=$CLOUDOPTIMIZER_TEST_RPM6_64_LABEL
-                    elif [ "$previous" = "1" ]; then
-                        is_supported=1
-                        supports_ver=$CLOUDOPTIMIZER_PREVIOUS_VERSION
-                        cver=$CLOUDOPTIMIZER_PREV_RPM6_64_LABEL
-                    else
-                        is_supported=1
-                        supports_ver=$CLOUDOPTIMIZER_CURRENT_VERSION
-                        cver=$CLOUDOPTIMIZER_RPM6_64_LABEL
-                    fi
-                else
-                    is_supported=0
-                fi
-            ;;
-
-            *)
-                is_supported=0
-            ;;
-        esac
-        mpkg="cloudoptimizer-${cver}.${arch}.rpm"
-        wpkg="cloudoptimizer-webui-${cver}.${arch}.rpm"
-        tpkg="cloudoptimizer-tools_${cver}.${arch}.rpm"
-    ;; 
-    RedHatEnterpriseServer)
-        os_type="rhel"
+    CentOS)
         case $version in
             5.4|5.5|5.6|5.7|5.8)
-                if [ "$arch" = "x86_64" ]; then
-                    if [ "$testing" = "1" ]; then
-                        is_supported=1
-                        supports_ver=$CLOUDOPTIMIZER_TESTING_VERSION
-                        cver=$CLOUDOPTIMIZER_TEST_RPM5_64_LABEL
-                    elif [ "$previous" = "1" ]; then
-                        is_supported=1
-                        supports_ver=$CLOUDOPTIMIZER_PREVIOUS_VERSION
-                        cver=$CLOUDOPTIMIZER_PREV_RPM5_64_LABEL
-                    else
-                        is_supported=1
-                        supports_ver=$CLOUDOPTIMIZER_CURRENT_VERSION
-                        cver=$CLOUDOPTIMIZER_RPM5_64_LABEL
-                    fi
-                elif [ "$arch" = "i386" ]; then
-                    is_supported=0
-                    supports_ver="1.1.5"
-                    cver=$CLOUDOPTIMIZER_RPM5_32_LABEL
+                if [ "$local" == "1" ]; then
+                    inst_type="RPM5_MANUAL"
                 else
-                    is_supported=0
+                    inst_type="RPM5_AUTO"
                 fi
             ;;
             6.0|6.1|6.2|6.3)
-                if [ "$arch" = "x86_64" ]; then
-                    if [ "$testing" = "1" ]; then
-                        is_supported=1
-                        supports_ver=$CLOUDOPTIMIZER_TESTING_VERSION
-                        cver=$CLOUDOPTIMIZER_TEST_RPM6_64_LABEL
-                    elif [ "$previous" = "1" ]; then
-                        is_supported=1
-                        supports_ver=$CLOUDOPTIMIZER_PREVIOUS_VERSION
-                        cver=$CLOUDOPTIMIZER_PREV_RPM6_64_LABEL
-                    else
-                        is_supported=1
-                        supports_ver=$CLOUDOPTIMIZER_CURRENT_VERSION
-                        cver=$CLOUDOPTIMIZER_RPM6_64_LABEL
-                    fi 
+                if [ "$local" == "1" ]; then
+                    inst_type="RPM6_MANUAL"
                 else
-                    is_supported=0
+                    inst_type="RPM6_AUTO"
                 fi
-            ;;
-
-            *)
-                is_supported=0
-            ;;
-        esac
-        mpkg="cloudoptimizer-${cver}.${arch}.rpm"
-        wpkg="cloudoptimizer-webui-${cver}.${arch}.rpm"
-        tpkg="cloudoptimizer-tools-${cver}.${arch}.rpm"
-    ;;
-    Fedora)
-        os_type="rhel"
-        case $version in
-            13|14|15|16|17)
-                if [ "$arch" = "x86_64" ]; then
-                    if [ "$testing" = "1" ]; then
-                        is_supported=1
-                        supports_ver=$CLOUDOPTIMIZER_TESTING_VERSION
-                        cver=$CLOUDOPTIMIZER_TEST_RPM6_64_LABEL
-                    elif [ "$previous" = "1" ]; then
-                        is_supported=1
-                        supports_ver=$CLOUDOPTIMIZER_PREVIOUS_VERSION
-                        cver=$CLOUDOPTIMIZER_PREV_RPM6_64_LABEL
-                    else
-                        is_supported=1
-                        supports_ver=$CLOUDOPTIMIZER_CURRENT_VERSION
-                        cver=$CLOUDOPTIMIZER_RPM6_64_LABEL
-                    fi
-                else
-                    is_supported=0
-                fi
-            ;;
-
-            *)
-                is_supported=0
-            ;;
-        esac
-        mpkg="cloudoptimizer-${cver}.${arch}.rpm"
-        wpkg="cloudoptimizer-webui-${cver}.${arch}.rpm"
-        tpkg="cloudoptimizer-tools-${cver}.${arch}.rpm"
-    ;;
-    SUSE)
-        os_type="rhel"
-        case $version in
-            11.4|12|12.1|12.2)
-                die "CloudOpt has tested SUSE versions 11.4 through 12.2 and determined that CloudOptimizer cannot be installed successfully at this time." 
-            ;;
-
-            *)
-                is_supported=0
-            ;;
-        esac
-    ;;
-    Mageia)
-        os_type="rhel"
-        case $version in
-            2|3)
-                die "CloudOpt has tested Mageia versions 2 and 3 and determined that CloudOptimizer cannot be installed successfully at this time." 
-            ;;
-
-            *)
-                is_supported=0
             ;;
         esac
     ;;
     Debian)
-        os_type="ubuntu"
         case $version in
             6.0|6.0.1|6.0.2|6.0.3|6.0.4|6.0.5|6.0.6)
-                if [ "$arch" = "x86_64" ]; then
-                    if [ "$testing" = "1" ]; then
-                        is_supported=1
-                        supports_ver=$CLOUDOPTIMIZER_TESTING_VERSION
-                        cver=$CLOUDOPTIMIZER_TEST_DEB10_64_LABEL
-                    elif [ "$previous" = "1" ]; then
-                        is_supported=1
-                        supports_ver=$CLOUDOPTIMIZER_PREVIOUS_VERSION
-                        cver=$CLOUDOPTIMIZER_PREV_DEB10_64_LABEL
-                    else
-                        is_supported=1
-                        supports_ver=$CLOUDOPTIMIZER_CURRENT_VERSION
-                        cver=$CLOUDOPTIMIZER_DEB10_64_LABEL
-                    fi 
-                elif [ "$arch" = "i386" ]; then
-                    is_supported=1
-                    supports_ver="1.1.7"
-                    cver=$CLOUDOPTIMIZER_DEB10_32_LABEL
-                else
-                    is_supported=0
-                fi
-            ;;
-            *)
-                is_supported=0
+                inst_type="DEB10_MANUAL"
             ;;
         esac
-        mpkg="cloudoptimizer_${cver}_${parch}.deb"
-        wpkg="cloudoptimizer-webui_${cver}_${parch}.deb"
-        tpkg="cloudoptimizer-tools_${cver}_${parch}.deb"
     ;;
-    Snowlinux)
-        os_type="ubuntu"
+    Fedora)
         case $version in
-            3.1)
-                if [ "$arch" = "x86_64" ]; then
-                    if [ "$testing" = "1" ]; then
-                        is_supported=1
-                        supports_ver=$CLOUDOPTIMIZER_TESTING_VERSION
-                        cver=$CLOUDOPTIMIZER_TEST_DEB10_64_LABEL
-                    elif [ "$previous" = "1" ]; then
-                        is_supported=1
-                        supports_ver=$CLOUDOPTIMIZER_PREVIOUS_VERSION
-                        cver=$CLOUDOPTIMIZER_PREV_DEB10_64_LABEL
-                    else
-                        is_supported=1
-                        supports_ver=$CLOUDOPTIMIZER_CURRENT_VERSION
-                        cver=$CLOUDOPTIMIZER_DEB10_64_LABEL
-                    fi 
-                elif [ "$arch" = "i386" ]; then
-                    is_supported=1
-                    supports_ver="1.1.7"
-                    cver=$CLOUDOPTIMIZER_DEB10_32_LABEL
+            13|14|15|16|17)
+                if [ "$local" == "1" ]; then
+                    inst_type="RPM6_MANUAL"
                 else
-                    is_supported=0
+                    inst_type="RPM6_AUTO"
                 fi
             ;;
-            *)
-                is_supported=0
+        esac
+    ;;
+    LinuxDeepin)
+        case $version in
+            12.06)
+                inst_type="DEB10_MANUAL"
             ;;
         esac
-        mpkg="cloudoptimizer_${cver}_${parch}.deb"
-        wpkg="cloudoptimizer-webui_${cver}_${parch}.deb"
-        tpkg="cloudoptimizer-tools_${cver}_${parch}.deb"
     ;;
     LinuxMint)
-        os_type="ubuntu"
         case $version in
             13|14)
-                if [ "$arch" = "x86_64" ]; then
-                    if [ "$testing" = "1" ]; then
-                        is_supported=1
-                        supports_ver=$CLOUDOPTIMIZER_TESTING_VERSION
-                        cver=$CLOUDOPTIMIZER_TEST_DEB10_64_LABEL
-                    elif [ "$previous" = "1" ]; then
-                        is_supported=1
-                        supports_ver=$CLOUDOPTIMIZER_PREVIOUS_VERSION
-                        cver=$CLOUDOPTIMIZER_PREV_DEB10_64_LABEL
-                    else
-                        is_supported=1
-                        supports_ver=$CLOUDOPTIMIZER_CURRENT_VERSION
-                        cver=$CLOUDOPTIMIZER_DEB10_64_LABEL
-                    fi
-                elif [ "$arch" = "i386" ]; then
-                    is_supported=1
-                    supports_ver="1.1.7"
-                    cver=$CLOUDOPTIMIZER_DEB10_32_LABEL
-                else
-                    is_supported=0
-                fi
-            ;;
-            *)
-                is_supported=0
+                inst_type="DEB10_MANUAL"
             ;;
         esac
-        mpkg="cloudoptimizer_${cver}_${parch}.deb"
-        wpkg="cloudoptimizer-webui_${cver}_${parch}.deb"
-        tpkg="cloudoptimizer-tools_${cver}_${parch}.deb"
+    ;;
+    Mageia)
+        case $version in
+            2|3)
+                inst_type="NONE"
+            ;;
+        esac
+    ;;
+    Oracle)
+        case $version in
+            5.8)
+                if [ "$local" == "1" ]; then
+                    inst_type="RPM5_MANUAL"
+                else
+                    inst_type="RPM5_AUTO"
+                fi
+            ;;
+            6.0|6.1|6.2|6.3)
+                if [ "$local" == "1" ]; then
+                    inst_type="RPM6_MANUAL"
+                else
+                    inst_type="RPM6_AUTO"
+                fi
+            ;;
+        esac
+    ;;
+    RedHatEnterpriseServer)
+        case $version in
+            5.4|5.5|5.6|5.7|5.8)
+                if [ "$local" == "1" ]; then
+                    inst_type="RPM5_MANUAL"
+                else
+                    inst_type="RPM5_AUTO"
+                fi
+            ;;
+            6.0|6.1|6.2|6.3)
+                if [ "$local" == "1" ]; then
+                    inst_type="RPM6_MANUAL"
+                else
+                    inst_type="RPM6_AUTO"
+                fi
+            ;;
+        esac
+    ;;
+    Scientific)
+        case $version in
+            5.8)
+                if [ "$local" == "1" ]; then
+                    inst_type="RPM5_MANUAL"
+                else
+                    inst_type="RPM5_AUTO"
+                fi
+            ;;
+            6.0|6.1|6.2|6.3)
+                if [ "$local" == "1" ]; then
+                    inst_type="RPM6_MANUAL"
+                else
+                    inst_type="RPM6_AUTO"
+                fi
+            ;;
+        esac
+    ;;
+    SUSE)
+        case $version in
+            11.4|12|12.1|12.2)
+                inst_type="NONE"
+            ;;
+        esac
+    ;;
+    Ubuntu)
+        case $version in
+            10.04|11.04)
+                if [ "$local" == "1" ]; then
+                    inst_type="DEB10_MANUAL"
+                else
+                    inst_type="DEB10_AUTO"
+                fi
+            ;;
+            8.04|10.10)
+                inst_type="NONE"
+            ;;
+            11.10)
+                inst_type="DEB10_MANUAL"
+            ;;
+            12.04)
+                if [ "$local" == "1" ]; then
+                    inst_type="DEB12_MANUAL"
+                else
+                    inst_type="DEB12_AUTO"
+                fi
+            ;;
+            12.10|13.04)
+                inst_type="DEB12_MANUAL" 
+            ;;
+        esac
     ;;
     Zorin)
-        os_type="ubuntu"
         case $version in
             6)
-                if [ "$arch" = "x86_64" ]; then
-                    if [ "$testing" = "1" ]; then
-                        is_supported=1
-                        supports_ver=$CLOUDOPTIMIZER_TESTING_VERSION
-                        cver=$CLOUDOPTIMIZER_TEST_DEB12_64_LABEL
-                    elif [ "$previous" = "1" ]; then
-                        is_supported=1
-                        supports_ver=$CLOUDOPTIMIZER_PREVIOUS_VERSION
-                        cver=$CLOUDOPTIMIZER_PREV_DEB12_64_LABEL
-                    else
-                        is_supported=1
-                        supports_ver=$CLOUDOPTIMIZER_CURRENT_VERSION
-                        cver=$CLOUDOPTIMIZER_DEB12_64_LABEL
-                    fi
-                elif [ "$arch" = "i386" ]; then
-                    is_supported=1
-                    supports_ver="1.1.7"
-                    cver=$CLOUDOPTIMIZER_DEB10_32_LABEL
-                else
-                    is_supported=0
-                fi
-            ;;
-            *)
-                is_supported=0
+                inst_type="DEB12_MANUAL" 
             ;;
         esac
-        mpkg="cloudoptimizer_${cver}_${parch}.deb"
-        wpkg="cloudoptimizer-webui_${cver}_${parch}.deb"
-        tpkg="cloudoptimizer-tools_${cver}_${parch}.deb"
     ;;
 esac
 
+# Find the right version to install
+# Classified distros belong to one of the following main types
+# Only add new package types here, not new RPM or DEB distros
+case $inst_type in
+    DEB10_AUTO)
+        os_type="ubuntu"
+        os_version="10"
+        inst_process="auto"
+        if [ "$arch" = "x86_64" ]; then
+            repopath="${CLOUDOPT_REPO_APT}/${CLOUDOPT_REPO_PATH_DEB10_64}"
+            if [ "$testing" = "1" ]; then
+                is_supported=1
+                supports_ver="${CLOUDOPTIMIZER_TESTING_VERSION}"
+                vlabel="${CLOUDOPTIMIZER_CURRENT_DEB10_64_LABEL}"
+            elif [ "$previous" = "1" ]; then
+                is_supported=1
+                supports_ver="${CLOUDOPTIMIZER_PREVIOUS_VERSION}"
+                vlabel="${CLOUDOPTIMIZER_PREVIOUS_DEB10_64_LABEL}"
+                mpkg="${CLOUDOPTIMIZER_PREVIOUS_DEB10_64_FILE}"
+                wpkg="${CLOUDOPTIMIZER_WEBUI_PREVIOUS_DEB10_64_FILE}"
+                tpkg="${CLOUDOPTIMIZER_TOOLS_PREVIOUS_DEB10_64_FILE}"
+            else 
+                is_supported=1
+                supports_ver="${CLOUDOPTIMIZER_CURRENT_VERSION}"
+                vlabel="${CLOUDOPTIMIZER_CURRENT_DEB10_64_LABEL}"
+                mpkg="${CLOUDOPTIMIZER_CURRENT_DEB10_64_FILE}"
+                wpkg="${CLOUDOPTIMIZER_WEBUI_CURRENT_DEB10_64_FILE}"
+                tpkg="${CLOUDOPTIMIZER_TOOLS_CURRENT_DEB10_64_FILE}"
+            fi
+        elif [ "$arch" = "i386" ]; then
+            is_supported=1
+            supports_ver="1.1.7"
+        else
+            die "Architecture $arch not recognized."
+        fi
+    ;;
+    DEB10_MANUAL)
+        os_type="ubuntu"
+        os_version="10"
+        inst_process="manual"
+        if [ "$arch" = "x86_64" ]; then
+            repopath="${CLOUDOPT_REPO_APT}/${CLOUDOPT_REPO_PATH_DEB10_64}"
+            if [ "$testing" = "1" ]; then
+                is_supported=1
+                supports_ver="${CLOUDOPTIMIZER_TESTING_VERSION}"
+            elif [ "$previous" = "1" ]; then
+                is_supported=1
+                supports_ver="${CLOUDOPTIMIZER_PREVIOUS_VERSION}"
+                mpkg="${CLOUDOPTIMIZER_PREVIOUS_DEB10_64_FILE}"
+                wpkg="${CLOUDOPTIMIZER_WEBUI_PREVIOUS_DEB10_64_FILE}"
+                tpkg="${CLOUDOPTIMIZER_TOOLS_PREVIOUS_DEB10_64_FILE}"
+            else 
+                is_supported=1
+                supports_ver="${CLOUDOPTIMIZER_CURRENT_VERSION}"
+                mpkg="${CLOUDOPTIMIZER_CURRENT_DEB10_64_FILE}"
+                wpkg="${CLOUDOPTIMIZER_WEBUI_CURRENT_DEB10_64_FILE}"
+                tpkg="${CLOUDOPTIMIZER_TOOLS_CURRENT_DEB10_64_FILE}"
+            fi
+        elif [ "$arch" = "i386" ]; then
+            is_supported=0
+        else
+            die "Architecture $arch not recognized."
+        fi
+    ;;
+    DEB12_AUTO)
+        os_type="ubuntu"
+        os_version="12"
+        inst_process="auto"
+        if [ "$arch" = "x86_64" ]; then
+            repopath="${CLOUDOPT_REPO_APT}/${CLOUDOPT_REPO_PATH_DEB12_64}"
+            if [ "$testing" = "1" ]; then
+                is_supported=1
+                supports_ver="${CLOUDOPTIMIZER_TESTING_VERSION}"
+                vlabel="${CLOUDOPTIMIZER_CURRENT_DEB12_64_LABEL}"
+            elif [ "$previous" = "1" ]; then
+                is_supported=1
+                supports_ver="${CLOUDOPTIMIZER_PREVIOUS_VERSION}"
+                vlabel="${CLOUDOPTIMIZER_PREVIOUS_DEB12_64_LABEL}"
+                mpkg="${CLOUDOPTIMIZER_PREVIOUS_DEB12_64_FILE}"
+                wpkg="${CLOUDOPTIMIZER_WEBUI_PREVIOUS_DEB12_64_FILE}"
+                tpkg="${CLOUDOPTIMIZER_TOOLS_PREVIOUS_DEB12_64_FILE}"
+            else 
+                is_supported=1
+                supports_ver="${CLOUDOPTIMIZER_CURRENT_VERSION}"
+                vlabel="${CLOUDOPTIMIZER_CURRENT_DEB12_64_LABEL}"
+                mpkg="${CLOUDOPTIMIZER_CURRENT_DEB12_64_FILE}"
+                wpkg="${CLOUDOPTIMIZER_WEBUI_CURRENT_DEB12_64_FILE}"
+                tpkg="${CLOUDOPTIMIZER_TOOLS_CURRENT_DEB12_64_FILE}"
+            fi
+        elif [ "$arch" = "i386" ]; then
+            is_supported=1
+            supports_ver="1.1.7"
+        else
+            die "Architecture $arch not recognized."
+        fi
+    ;;
+    DEB12_MANUAL)
+        os_type="ubuntu"
+        os_version="12"
+        inst_process="manual"
+        if [ "$arch" = "x86_64" ]; then
+            repopath="${CLOUDOPT_REPO_APT}/${CLOUDOPT_REPO_PATH_DEB12_64}"
+            if [ "$testing" = "1" ]; then
+                is_supported=1
+                supports_ver="${CLOUDOPTIMIZER_TESTING_VERSION}"
+            elif [ "$previous" = "1" ]; then
+                is_supported=1
+                supports_ver="${CLOUDOPTIMIZER_PREVIOUS_VERSION}"
+                mpkg="${CLOUDOPTIMIZER_PREVIOUS_DEB12_64_FILE}"
+                wpkg="${CLOUDOPTIMIZER_WEBUI_PREVIOUS_DEB12_64_FILE}"
+                tpkg="${CLOUDOPTIMIZER_TOOLS_PREVIOUS_DEB12_64_FILE}"
+            else 
+                is_supported=1
+                supports_ver="${CLOUDOPTIMIZER_CURRENT_VERSION}"
+                mpkg="${CLOUDOPTIMIZER_CURRENT_DEB12_64_FILE}"
+                wpkg="${CLOUDOPTIMIZER_WEBUI_CURRENT_DEB12_64_FILE}"
+                tpkg="${CLOUDOPTIMIZER_TOOLS_CURRENT_DEB12_64_FILE}"
+            fi
+            dep_packages=($LIBTCMALLOC_MINIMAL0_DEB12_64)
+            dep_packages+=($LIBUNWIND7_DEB12_64)
+            dep_packages+=($LIBGOOGLE_PERFTOOLS0_DEB12_64)
+        elif [ "$arch" = "i386" ]; then
+            is_supported=0
+        else
+            die "Architecture $arch not recognized."
+        fi
+    ;;
+    RPM5_AUTO)
+        os_type="rhel"
+        os_version="5"
+        inst_process="auto"
+        if [ "$arch" = "x86_64" ]; then
+            repopath="${CLOUDOPT_REPO_YUM}/${CLOUDOPT_REPO_PATH_RPM5_64}"
+            if [ "$testing" = "1" ]; then
+                is_supported=1
+                supports_ver="${CLOUDOPTIMIZER_TESTING_VERSION}"
+            elif [ "$previous" = "1" ]; then
+                is_supported=1
+                supports_ver="${CLOUDOPTIMIZER_PREVIOUS_VERSION}"
+            else 
+                is_supported=1
+                supports_ver="${CLOUDOPTIMIZER_CURRENT_VERSION}"
+            fi
+            dep_packages=($XFSPROGS_RPM5_64)
+            dep_packages+=($COLLECTD_4_10_3_RPM5_64)
+        elif [ "$arch" = "i386" ]; then
+            is_supported=0
+        else
+            die "Architecture $arch not recognized."
+        fi
+    ;;
+    RPM5_MANUAL)
+        os_type="rhel"
+        os_version="5"
+        inst_process="manual"
+        if [ "$arch" = "x86_64" ]; then
+            repopath="${CLOUDOPT_REPO_YUM}/${CLOUDOPT_REPO_PATH_RPM5_64}"
+            if [ "$testing" = "1" ]; then
+                is_supported=1
+                supports_ver="${CLOUDOPTIMIZER_TESTING_VERSION}"
+            elif [ "$previous" = "1" ]; then
+                is_supported=1
+                supports_ver="${CLOUDOPTIMIZER_PREVIOUS_VERSION}"
+                mpkg="${CLOUDOPTIMIZER_PREVIOUS_RPM5_64_FILE}"
+                wpkg="${CLOUDOPTIMIZER_WEBUI_PREVIOUS_RPM5_64_FILE}"
+                tpkg="${CLOUDOPTIMIZER_TOOLS_PREVIOUS_RPM5_64_FILE}"
+            else 
+                is_supported=1
+                supports_ver="${CLOUDOPTIMIZER_CURRENT_VERSION}"
+                mpkg="${CLOUDOPTIMIZER_CURRENT_RPM5_64_FILE}"
+                wpkg="${CLOUDOPTIMIZER_WEBUI_CURRENT_RPM5_64_FILE}"
+                tpkg="${CLOUDOPTIMIZER_TOOLS_CURRENT_RPM5_64_FILE}"
+            fi
+            dep_packages=($XFSPROGS_RPM5_64)
+            dep_packages+=($LIBNET_RPM5_64)
+            dep_packages+=($LIBNET_DEVEL_RPM5_64)
+            dep_packages+=($LIBNETFILTER_QUEUE_RPM5_64)
+            dep_packages+=($LIBNETFILTER_QUEUE_SO_1_RPM5_64)
+            dep_packages+=($LIBNFNETLINK_RPM5_64)
+            dep_packages+=($LIBNFNETLINK_SO_0_RPM5_64)
+            dep_packages+=($NC_RPM5_64)
+            dep_packages+=($MONIT_5_1_1_RPM5_64)
+            dep_packages+=($GPERFTOOLS_LIBS_RPM5_64)
+            dep_packages+=($DEJAVU_FONTS_COMMON_RPM5_64)
+            dep_packages+=($DEJAVU_LGC_SANS_MONO_FONTS_RPM5_64)
+            dep_packages+=($DEJAVU_SANS_MONO_FONTS_RPM5_64)
+            dep_packages+=($FONTPACKAGES_FILESYSTEM_RPM5_64)
+            dep_packages+=($RRDTOOL_RPM5_64)
+            dep_packages+=($COLLECTD_4_10_3_RPM5_64)
+            dep_packages+=($COLLECTD_RRDTOOL_RPM5_64)
+        elif [ "$arch" = "i386" ]; then
+            is_supported=0
+        else
+            die "Architecture $arch not recognized."
+        fi
+    ;;
+    RPM6_AUTO)
+        os_type="rhel"
+        os_version="6"
+        inst_process="auto"
+        if [ "$arch" = "x86_64" ]; then
+            repopath="${CLOUDOPT_REPO_YUM}/${CLOUDOPT_REPO_PATH_RPM6_64}"
+            if [ "$testing" = "1" ]; then
+                is_supported=1
+                supports_ver="${CLOUDOPTIMIZER_TESTING_VERSION}"
+            elif [ "$previous" = "1" ]; then
+                is_supported=1
+                supports_ver="${CLOUDOPTIMIZER_PREVIOUS_VERSION}"
+            else 
+                is_supported=1
+                supports_ver="${CLOUDOPTIMIZER_CURRENT_VERSION}"
+            fi
+            dep_packages=($XFSPROGS_RPM6_64)
+            dep_packages+=($MONIT_5_1_1_RPM6_64)
+            dep_packages+=($GPERFTOOLS_LIBS_RPM6_64)
+            dep_packages+=($GOOGLE_PERFTOOLS_RPM6_64)
+        elif [ "$arch" = "i386" ]; then
+            is_supported=0
+        else
+            die "Architecture $arch not recognized."
+        fi
+    ;;
+    RPM6_MANUAL)
+        os_type="rhel"
+        os_version="6"
+        inst_process="manual"
+        if [ "$arch" = "x86_64" ]; then
+            repopath="${CLOUDOPT_REPO_YUM}/${CLOUDOPT_REPO_PATH_RPM6_64}"
+            if [ "$testing" = "1" ]; then
+                is_supported=1
+                supports_ver="${CLOUDOPTIMIZER_TESTING_VERSION}"
+            elif [ "$previous" = "1" ]; then
+                is_supported=1
+                supports_ver="${CLOUDOPTIMIZER_PREVIOUS_VERSION}"
+                mpkg="${CLOUDOPTIMIZER_PREVIOUS_RPM6_64_FILE}"
+                wpkg="${CLOUDOPTIMIZER_WEBUI_PREVIOUS_RPM6_64_FILE}"
+                tpkg="${CLOUDOPTIMIZER_TOOLS_PREVIOUS_RPM6_64_FILE}"
+            else 
+                is_supported=1
+                supports_ver="${CLOUDOPTIMIZER_CURRENT_VERSION}"
+                mpkg="${CLOUDOPTIMIZER_CURRENT_RPM6_64_FILE}"
+                wpkg="${CLOUDOPTIMIZER_WEBUI_CURRENT_RPM6_64_FILE}"
+                tpkg="${CLOUDOPTIMIZER_TOOLS_CURRENT_RPM6_64_FILE}"
+            fi
+            dep_packages=($XFSPROGS_RPM6_64)
+            dep_packages+=($LIBNET_RPM6_64)
+            dep_packages+=($LIBNET_DEVEL_RPM6_64)
+            dep_packages+=($LIBNETFILTER_QUEUE_RPM6_64)
+            dep_packages+=($LIBNETFILTER_QUEUE_SO_1_RPM6_64)
+            dep_packages+=($LIBNFNETLINK_RPM6_64)
+            dep_packages+=($LIBNFNETLINK_SO_0_RPM6_64)
+            dep_packages+=($NC_RPM6_64)
+            dep_packages+=($MONIT_5_1_1_RPM6_64)
+            dep_packages+=($GPERFTOOLS_LIBS_RPM6_64)
+            dep_packages+=($DEJAVU_FONTS_COMMON_RPM6_64)
+            dep_packages+=($DEJAVU_LGC_SANS_MONO_FONTS_RPM6_64)
+            dep_packages+=($DEJAVU_SANS_MONO_FONTS_RPM6_64)
+            dep_packages+=($FONTPACKAGES_FILESYSTEM_RPM6_64)
+            dep_packages+=($RRDTOOL_RPM6_64)
+            dep_packages+=($COLLECTD_RRDTOOL_RPM6_64)
+        elif [ "$arch" = "i386" ]; then
+            is_supported=0
+        else
+            die "Architecture $arch not recognized."
+        fi
+    ;;
+    NONE)
+        message "CloudOpt has tested this version of Linux and determined that CloudOptimizer cannot be successfully installed at this time."
+        message "If you require compatibility with this Linux version, please contact CloudOpt Support for assistance."
+        die "Installation cancelled."
+    ;;
+esac
+    
+    
 if [ "$is_supported" == "0" ]; then
     message "$distro $version $arch is not supported by this installer." error
-    die "Please contact CloudOpt Support for assistance."
+    message "If this distribution is very similar to a supported version, you may be able to install with --distro and --version."
+    die "Installation cancelled. Please contact CloudOpt Support for assistance."
 elif [ "$remove" == "1" ]; then
     message "Preparing to remove CloudOptimizer..."
 else
-    message "This appears to be a supported operating system ($distro $version $arch)."
+    message "This appears to be a supported operating system ($distro $version $arch ($ddesc))."
     message "CloudOptimizer version $supports_ver will be installed."
 fi
 
@@ -1377,7 +1390,7 @@ if [ "$installed" == "1" ]; then
         message "CloudOptimizer is installed, but you chose to force, so we are ignoring it." warning
     fi
 else
-    message "No existing CloudOptimizer installation."
+    message "There is no existing CloudOptimizer installation."
 fi
 
 # Determine if CloudOptimizer is running
@@ -1401,10 +1414,10 @@ fi
 if [ "$remove" == "1" ] && [ "$manifest" == "0" ]; then
     if [ "$os_type" == "ubuntu" ]; then
         remove_apt
-    elif [ "$distro" == "SUSE" ]; then
-        remove_rpm
-    else
+    elif [ "$os_type" == "rhel" ]; then
         remove_yum
+    else
+        die "Unrecognized os_type ($os_type) when preparing to remove CloudOptimizer."
     fi
     exit 0
 fi
@@ -1412,7 +1425,8 @@ fi
 # If installed, back up the existing configuration
 if [ "$installed" == "1" ] && [ "$manifest" == "0" ]; then
     datestamp=`date +%y%m%d%H%M`
-    message "There is an existing CloudOptimizer installation.  Backing up the configuration to:"
+    message "There is an existing CloudOptimizer installation." warning
+    message "Backing up the configuration to:"
     message "/etc/cloudoptimizer/cloudoptimizer.conf.installer.$datestamp" action
     if [ -f "/etc/cloudoptimizer.conf" ] && [ -d "/etc/cloudoptimizer" ]; then
         cp /etc/cloudoptimizer.conf /etc/cloudoptimizer/cloudoptimizer.conf.installer.$datestamp && message "OK" status
@@ -1468,8 +1482,9 @@ eula_file="/etc/cloudoptimizer/accept-eula.txt"
 if [ -f "$eula_file" ]; then
     accepteula=1
 fi
-if [ "$accepteula" = 1 ]; then
-    export DEBIAN_FRONTEND=noninteractive # No apt prompt for EULA
+if [ "$accepteula" == "1" ]; then
+    # Don't prompt for EULA in apt
+    export DEBIAN_FRONTEND=noninteractive
     mkdir -p ${eula_file%/*}
     touch $eula_file
     if [ ! -f "$eula_file" ]; then
@@ -1489,7 +1504,8 @@ else
     if ! yesno
         then die "You must accept the EULA.  Install cancelled."
     fi
-    export DEBIAN_FRONTEND=noninteractive # No apt prompt for EULA
+    # Don't prompt for EULA in apt
+    export DEBIAN_FRONTEND=noninteractive
     mkdir -p ${eula_file%/*}
     touch $eula_file
     if [ ! -f "$eula_file" ]; then
@@ -1499,6 +1515,24 @@ fi
 
 installer_lib="http://s3.amazonaws.com/cloudopt-installer/lib"
 
+# Install extra repos for Ubuntu 12.x
+if [ "$inst_process" == "manual" ]; then
+    if [ "$distro" == "Ubuntu" ] && [ "$version" == "12.10" ]; then
+        if [ ! -f /etc/apt/sources.list.d/ubuntu-quantal.list ]; then
+            download http://kb.cloudopt.com/ubuntu-quantal.list
+            message "Installing supplemental repos for Ubuntu 12.10 and dervivatives." action
+            cp ubuntu-quantal.list /etc/apt/sources.list.d/ && message "OK" status || die "Couldn't install supplemental Ubuntu 12.10 repositories."
+        fi
+    elif [ "$distro" == "LinuxMint" ] && [ "$version" == "14" ]; then
+        if [ ! -f /etc/apt/sources.list.d/ubuntu-quantal.list ]; then
+            download http://kb.cloudopt.com/ubuntu-quantal.list
+            message "Installing supplemental repos for Ubuntu 12.10 and dervivatives." action
+            cp ubuntu-quantal.list /etc/apt/sources.list.d/ && message "OK" status || die "Couldn't install supplemental Ubuntu 12.10 repositories."
+        fi
+    fi
+fi
+
+# Set repo type (main or testing)
 if [ $testing = 1 ]; then
     aptrepotype="testing"
     yumrepotype="Testing"
@@ -1507,14 +1541,14 @@ else
     yumrepotype="Release"
 fi
 
-# Check for existing cloudopt repositories
-if [ "$local" == "0" ]; then
-    if [ "$distro" == "Mageia" ]; then
-        repodir="/etc/yum/repos.d"
-    elif [ $os_type == "rhel" ]; then
+# Check for existing cloudopt repositories      
+if [ "$local" == "0" ] && [ "$inst_process" == "auto" ]; then
+    if [ "$os_type" == "rhel" ]; then
         repodir="/etc/yum.repos.d"
-    elif [ $os_type == "ubuntu" ]; then
+    elif [ "$os_type" == "ubuntu" ]; then
         repodir="/etc/apt/sources.list.d"
+    else
+        die "Unrecognized os_type ($os_type) when preparing to install repositories."
     fi
     existing_repos=(`find $repodir | egrep [Cc]loud[Oo]pt`)
     if [ ${#existing_repos[@]} != "0" ]; then
@@ -1539,259 +1573,123 @@ if [ "$local" == "0" ]; then
     fi
 
     if [ $os_type == "rhel" ]; then
+        # Where to get the repo definitions for the testing repos
+        # This is not the actual testing repository
         if [ $testing = 1 ]; then
             repo="http://kb.cloudopt.com"
         else
             repo="http://yum.cloudopt.com"
         fi
 
-        # Set EPEL version for Amazon and Fedora Linux
-        if [ $majorver = "2012" ] || [ "$majorver" == "2011" ] || [ "$distro" == "Fedora" ] || [ "$distro" == "Mageia" ]; then
-            os_version=6
-        fi
-
         # EPEL check
         message "Checking for EPEL repository" action
-        rpm --quiet -q epel-release >>$log 2&>1 || [ "$distro" == "Fedora" ] || [ "$distro" == "Mageia" ] || [ "$distro" == "SUSE" ]
+        rpm --quiet -q epel-release >>$log 2>&1
         if [ "$?" != "0" ]; then
-            message "The Extra Packages for Enterprise Linux repository is not installed on your machine. This is required to provide dependencies for CloudOptimizer." warning
+            message "The Extra Packages for Enterprise Linux repository is not installed. This is required to provide dependencies for CloudOptimizer." warning
             message " Would you like us to install it now? (y/n) " prompt
             if ! yesno
                 then die "We require EPEL for installation.  Exiting."
             fi
-            if [ "$distro" == "RedHatEnterpriseLinux" ] && [ "$version" == "5.5" ]; then
-                message "Installing EPEL rpm" action
-                rpm -Uvh ftp://ftp.pbone.net/mirror/download.fedora.redhat.com/pub/fedora/epel/5/x86_64/epel-release-5-4.noarch.rpm && message "OK" status || die "Could not install EPEL repo!  Exiting."
-            else
-                download "$installer_lib/epel-release-$os_version.noarch.rpm"
-                message "Installing EPEL rpm" action
-                yum -y localinstall ${tempdir}/epel-release-$os_version.noarch.rpm >>$log 2&>1 && message "OK" status || die "Could not install EPEL repo!  Exiting."
-                rpm --quiet -q epel-release || die "Failed to install EPEL!  Exiting."
-            fi
+            download "$installer_lib/epel-release-$os_version.noarch.rpm"
+            message "Installing EPEL rpm" action
+            rpm -i ${tempdir}/epel-release-${os_version}.noarch.rpm >>$log 2>&1 && message "OK" status || die "Could not install EPEL repo!  Exiting."
+            rpm --quiet -q epel-release || die "Failed to install EPEL!  Exiting."
         fi
 
         # Install repo key
         download $repo/RPM-GPG-KEY-cloudopt.com
-        message "Installing CentOS signing key" action
+        message "Installing yum signing key" action
         rpm --import $tempdir/RPM-GPG-KEY-cloudopt.com  && message "OK" status || die "Could not import Cloudopt RPM GPG key! Exiting."
     
         # Install repo file
         download $repo/repo/Cloudopt-$yumrepotype.$os_version.repo
-        message "Installing CentOS repository settings" action
+        message "Installing yum repository settings" action
         
         cp $tempdir/Cloudopt-$yumrepotype.$os_version.repo "$repodir" && message "OK" status || die "Could not copy repo file to "$repodir" ! Exiting."
 
-    elif [ $os_type == "ubuntu" ] && [ $distro != "Debian" ] && [ "$distro" != "LinuxMint" ] && [ "$distro" != "Snowlinux" ]; then
-        if [ "$version" != "11.10" ] && [ "$version" != "12.10" ] && [ "$version" != "13.04" ]; then
-            repo="http://apt.cloudopt.com"
-            download $repo/keys/cloudopt-release-ubuntu.key
-            message "Importing apt signing key" action
-            apt-key add $tempdir/cloudopt-release-ubuntu.key >>$log 2&>1 && message "OK" status || die "Could not import Cloudopt APT GPG key! Exiting."
-            download $repo/repo/cloudopt-$aptrepotype.`lsb_release -cs`.list
-            message "Installing apt repository settings" action
-            cp $tempdir/cloudopt-$aptrepotype.`lsb_release -cs`.list /etc/apt/sources.list.d/ && message "OK" status || die "Could not copy repo file to '/etc/apt/sources.list.d/' ! Exiting."
-            message "Updating APT package index (this may take a while)" action
-            apt-get -qq update && message "OK" status || die "Could not update repository data! Exiting."
-        elif [ "$version" == "12.10" ]; then
-            if [ ! -f /etc/apt/sources.list.d/ubuntu-quantal.list ]; then
-                download http://kb.cloudopt.com/ubuntu-quantal.list
-                cp ubuntu-quantal.list /etc/apt/sources.list.d/ || die "Couldn't install supplemental Ubuntu 12.10 repositories."
-            fi
-        fi
-    elif [ "$distro" == "LinuxMint" ] && [ "$version" == "14" ]; then
-        if [ ! -f /etc/apt/sources.list.d/ubuntu-quantal.list ]; then
-            download http://kb.cloudopt.com/ubuntu-quantal.list
-            cp ubuntu-quantal.list /etc/apt/sources.list.d/ || die "Couldn't install supplemental Ubuntu 12.10 repositories."
-        fi
+    elif [ $os_type == "ubuntu" ]; then
+        repo="http://apt.cloudopt.com"
+        download $repo/keys/cloudopt-release-ubuntu.key
+        message "Importing apt signing key" action
+        apt-key add $tempdir/cloudopt-release-ubuntu.key >>$log 2>&1 && message "OK" status || die "Could not import Cloudopt APT GPG key! Exiting."
+        download $repo/repo/cloudopt-$aptrepotype.`lsb_release -cs`.list
+        message "Installing apt repository settings" action
+        cp $tempdir/cloudopt-$aptrepotype.`lsb_release -cs`.list /etc/apt/sources.list.d/ && message "OK" status || die "Could not copy repo file to '/etc/apt/sources.list.d/' ! Exiting."
     fi
 fi
 
+# Update package cache before attempting to install anything
+if [ "$os_type" == "ubuntu" ]; then
+    message "Updating apt package cache (this may take a while)" action
+    apt-get update >>$log 2>&1 && message "OK" status || message "Apt update failed.  We'll try to install anyway, but this might be a problem." warning
+fi
+
+
 if [ "$reposonly" == "0" ]; then
-    message "Installing CloudOptimizer"
+    message "Preparing to install CloudOptimizer"
     if [ "$manifest" == "1" ]; then
         message "Creating download script."
     elif [ "$local" == "1" ]; then
         message "Attempting a local install." warning
-        rpmflags="-i"
-    else
-        rpmflags="-Uvh"
     fi
-    if [ $os_type == "rhel" ]; then
-        if [ "$manifest" == "0" ] && [ "$installed" == "1" ] || [ "$downgrade" == "1" ]; then
+
+    if [ "$os_type" == "rhel" ] && [ "$manifest" == "0" ]; then
+        if [ "$installed" == "1" ]; then
             message "We must remove the previous version before installing on RHEL variants." warning
             remove_yum
         fi
-        if [ $distro = "RedHatEnterpriseServer" ] || [ "$distro" == "Oracle" ]; then
-            rpm -q xfsprogs >>$log 2>&1 && xfsprogs=1 || xfsprogs=0
-            if [ "$xfsprogs" = "0" ]; then
-                if [ $majorver = "5" ]; then
-                    message "Installing xfsprogs" action
-                    download $XFSPROGS_RPM5_64
-                    rpm $rpmflags `basename $XFSPROGS_RPM5_64` >>$log 2>&1 && message "OK" status || die "Could not install xfsprogs!  Exiting."
-                elif [ $majorver = "6" ]; then
-                    message "Installing xfsprogs" action
-                    download $XFSPROGS_RPM6_64
-                    rpm $rpmflags `basename $XFSPROGS_RPM6_64` >>$log 2>&1 && message "OK" status || die "Could not install xfsprogs!  Exiting."
-                fi
-            fi
-        fi
-        if [ $distro == "Amazon" ] || [ "$distro" == "Fedora" ]; then
-            rpm -q monit >>$log 2>&1 && monit=1 || monit=0
-            if [ "$monit" == "0" ]; then
-                download $MONIT_5_1_1_RPM6_64
-                message "Installing monit" action
-                rpm $rpmflags `basename $MONIT_5_1_1_RPM6_64` >>$log 2>&1 && message "OK" status || die "Could not install monit!  Exiting."
-            fi
-        fi
-        if [ $distro == "Amazon" ]; then
-            rpm -q gperftools-libs >>$log 2>&1 && gperftools=1 || gperftools=0
-            if [ "$gperftools" == "0" ]; then
-                download $GPERFTOOLS_LIBS_RPM6_64
-                message "Installing gperftools-libs" action
-                rpm $rpmflags `basename $GPERFTOOLS_LIBS_RPM6_64` >>$log 2>&1 && message "OK" status || die "Could not install monit!  Exiting."
-            fi
-        fi
-        if [ "$distro" == "Fedora" ]; then
-            if [ "$version" == "13" ] || [ "$version" == "14" ] || [ "$version" == "15" ]; then
-                message "Installing $GOOGLE_PERFTOOLS_RPM6_64" action
-                yum -y localinstall --nogpgcheck $GOOGLE_PERFTOOLS_RPM6_64 && message "OK" status || die "Could not install `basename $GOOGLE_PERFTOOLS_RPM6_64`.  Exiting."
-            fi
-        fi
-        if [ $majorver = "5" ]; then
-            rpm -q collectd >>$log 2>&1 && collectd=1 || collectd=0
-            if [ "$collectd" = "0" ]; then
-                download $COLLECTD_4_10_3_RPM5_64
-                message "Installing collectd" action
-                rpm $rpmflags `basename $COLLECTD_4_10_3_RPM5_64` >>$log 2>&1 && message "OK" status || die "Could not install collectd!  Exiting."
-            fi
-        fi
-        if [ $arch = "x86_64" ]; then
-            if [ $majorver = "5" ]; then
-                repopath="http://yum.cloudopt.com/CentOS/x86_64"
-            else
-                repopath="http://yum.cloudopt.com/CentOS-6/x86_64"
-            fi
-            if [ "$local" == "1" ]; then
-                install_rpm
-            else
-                install_yum
-            fi
-        elif [ $arch = "i386" ]; then
-            repopath="http://yum.cloudopt.com/CentOS/i386"
-            yum install python26
-            rpm $rpmflags $LIBNETFILTER_QUEUE_RPM5_32
-            rpm $rpmflags $LIBNETFILTER_QUEUE_SO_1_RPM5_32
-            rpm $rpmflags $LIBNFNETLINK_SO_0_RPM5_32
-            rpm $rpmflags $MONIT_5_1_1_RPM6_64
-            install_rpm
-        fi
-        if [ "$distro" == "Scientific" ]; then
-            download "http://kb.cloudopt.com/sci-init.patch" 
-            message "Patching init script for Scientific Linux" action
-            patch /etc/init.d/cloudoptimizer sci-init.patch >>$log 2>&1 && message "OK" status || die "Couldn't patch init script.  Exiting."
-        fi
-        if [ "$distro" == "Oracle" ]; then
-            download "http://kb.cloudopt.com/ora-init.patch" 
-            message "Patching init script for Oracle Linux" action
-            patch /etc/init.d/cloudoptimizer ora-init.patch >>$log 2>&1 && message "OK" status || die "Couldn't patch init script.  Exiting."
-        fi
-        if [ "$distro" == "Fedora" ]; then
-            download "http://kb.cloudopt.com/fed-init.patch" 
-            message "Patching init script for Fedora Linux" action
-            patch /etc/init.d/cloudoptimizer fed-init.patch >>$log 2>&1 && message "OK" status || die "Couldn't patch init script.  Exiting."
-        fi
-        if [ "$distro" == "Amazon" ]; then
-            download "http://kb.cloudopt.com/aws-init.patch" 
-            message "Patching init script for Amazon Linux" action
-            patch /etc/init.d/cloudoptimizer aws-init.patch >>$log 2>&1 && message "OK" status || die "Couldn't patch init script.  Exiting."
-        fi
-    elif [ "$os_type" == "ubuntu" ]; then
-        message "Updating apt cache (this may take a while)" action
-        apt-get update >>$log 2>&1 && message "OK" status || message "Apt update failed.  We'll try to install anyway, but this might be a problem." warning
-        if [ "$downgrade" == "1" ]; then
-            message "We must remove the previous version in order to downgrade with apt." warning
-            remove_apt
-        fi
-        if [ "$distro" == "Ubuntu" ]; then
-            if [ $arch = "x86_64" ]; then
-                if [ "$previous" == "1" ] || [ "$version" == "11.10" ] || [ "$version" == "12.10" ] || [ "$version" == "13.04" ]; then
-                    repopath="http://apt.cloudopt.com/ubuntu/pool/main/c/cloudoptimizer"
-                    if [ "$local" == "1" ]; then
-                        install_dpkg
-                    else
-                        install_gdebi
-                    fi
-                else
-                    repopath="http://apt.cloudopt.com/ubuntu/pool/main/c/cloudoptimizer"
-                    if [ "$local" == "1" ]; then
-                        install_dpkg
-                    else
-                        install_apt
-                    fi
-                fi
-            elif [ $arch = "i386" ]; then
-                repopath="http://apt.cloudopt.com/ubuntu/pool/main/c/cloudoptimizer"
-                install_gdebi
-            fi
-        elif [ "$distro" == "Zorin" ]; then
-            if [ "$previous" == "1" ]; then
-                    repopath="http://apt.cloudopt.com/ubuntu/pool/main/c/cloudoptimizer"
-                    if [ "$local" == "1" ]; then
-                        install_dpkg
-                    else
-                        install_gdebi
-                    fi
-                else
-                    repopath="http://apt.cloudopt.com/ubuntu/pool/main/c/cloudoptimizer"
-                    if [ "$local" == "1" ]; then
-                        install_dpkg
-                    else
-                        install_apt
-                    fi
-                fi
-        elif [ "$distro" == "Debian" ] || [ "$distro" == "LinuxMint" ] || [ "$distro" == "Snowlinux" ] || [ "$distro" == "LinuxDeepin" ]; then
-            repopath="http://apt.cloudopt.com/ubuntu/pool/main/c/cloudoptimizer"
+    elif [ "$os_type" == "ubuntu" ] && [ "$manifest" == "0" ] && [ "$downgrade" == "1" ]; then
+        message "We must remove the previous version in order to downgrade." warning
+        remove_apt
+    fi
+    
+    
+    if [ "$inst_type" == "RPM5_MANUAL" ] || [ "$inst_type" == "RPM6_MANUAL" ]; then
+        install_deps_rpm
+        install_rpm
+    elif [ "$inst_type" == "DEB10_MANUAL" ] || [ "$inst_type" == "DEB12_MANUAL" ]; then
+        install_deps_gdebi
+        install_gdebi
+    elif [ "$inst_type" == "RPM5_AUTO" ] ||  [ "$inst_type" == "RPM6_AUTO" ]; then
+        install_deps_rpm
+        install_yum
+    elif [ "$inst_type" == "DEB10_AUTO" ] ||  [ "$inst_type" == "DEB12_AUTO" ]; then
+        if [ "$previous" == "0" ]; then
+            install_apt
+        else
             install_gdebi
         fi
-    fi
-    if [ "$distro" == "LinuxMint" ]; then
-        download "http://kb.cloudopt.com/mint-init.patch"
-        message "Patching init script for Mint Linux" action
-        patch /etc/init.d/cloudoptimizer mint-init.patch >>$log 2>&1 && message "OK" status || die "Couldn't patch init script.  Exiting."
-    fi
-    if [ "$distro" == "LinuxDeepin" ]; then
-        download "http://kb.cloudopt.com/deep-init.patch"
-        message "Patching init script for Deepin Linux" action
-        patch /etc/init.d/cloudoptimizer deep-init.patch >>$log 2>&1 && message "OK" status || die "Couldn't patch init script.  Exiting."
-    fi
-    if [ "$distro" == "Zorin" ]; then
-        download "http://kb.cloudopt.com/zor-init.patch"
-        message "Patching init script for Zorin Linux" action
-        patch /etc/init.d/cloudoptimizer zor-init.patch >>$log 2>&1 && message "OK" status || die "Couldn't patch init script.  Exiting."
-    fi
-fi
-
-if [ "$password" == "1" ]; then
-    if [ "$os_type" == "ubuntu" ]; then
-        echo "uiadmin:$ui_password" | chpasswd && \
-          echo;message "You can access the WebUI at https://localhost:8000/ and log in as uiadmin with the password you just set." || \
-          message "Failed to set password.  CloudOptimizer WebUI remains disabled.  Enable it at any time by executing 'passwd uiadmin'." warning
     else
-        echo "$ui_password" | passwd --stdin uiadmin  && \
-          echo;message "You can access the WebUI at https://localhost:8000/ and log in as uiadmin with the password you just set." || \
-          message "Failed to set password.  CloudOptimizer WebUI remains disabled.  Enable it at any time by executing 'passwd uiadmin'." warning
+        die "Couldn't determine an appropriate installer for $inst_type."
     fi
-elif [ "$skipyesno" != "1" ] && [ "$force" != "1" ]; then
-    message " Do you want to enable the CloudOptimizer WebUI? " prompt
-    if ! yesno
-        then message "CloudOptimizer WebUI remains disabled.  Enable it at any time by executing 'passwd uiadmin'."
+    
+    download "http://kb.cloudopt.com/init.patch"
+    message "Patching init script for additional distribution support" action
+    patch /etc/init.d/cloudoptimizer init.patch --ignore-whitespace >>$log 2>&1 && message "OK" status || die "Couldn't patch init script.  Exiting."
+
+    if [ "$password" == "1" ]; then
+        if [ "$os_type" == "ubuntu" ]; then
+            echo "uiadmin:$ui_password" | chpasswd && \
+              echo;message "You can access the WebUI at https://localhost:8000/ and log in as uiadmin with the password you just set." || \
+              message "Failed to set password.  CloudOptimizer WebUI remains disabled.  Enable it at any time by executing 'passwd uiadmin'." warning
+        else
+            echo "$ui_password" | passwd --stdin uiadmin  && \
+              echo;message "You can access the WebUI at https://localhost:8000/ and log in as uiadmin with the password you just set." || \
+              message "Failed to set password.  CloudOptimizer WebUI remains disabled.  Enable it at any time by executing 'passwd uiadmin'." warning
+        fi
+    elif [ "$skipyesno" != "1" ] && [ "$force" != "1" ]; then
+        message " Do you want to enable the CloudOptimizer WebUI? " prompt
+        if ! yesno; then
+            message "CloudOptimizer WebUI remains disabled.  Enable it at any time by executing 'passwd uiadmin'."
+        else
+            message "Please set the WebUI password:"
+            passwd uiadmin && \
+              echo;message "You can access the WebUI at https://localhost:8000/ and log in as uiadmin with the password you just set." || \
+              message "Failed to set password.  CloudOptimizer WebUI remains disabled.  Enable it at any time by executing 'passwd uiadmin'." warning
+        fi
+    else
+        message "CloudOptimizer WebUI remains disabled.  Enable it at any time by executing 'passwd uiadmin'."
     fi
-    message "Please set the WebUI password:"
-    passwd uiadmin && \
-      echo;message "You can access the WebUI at https://localhost:8000/ and log in as uiadmin with the password you just set." || \
-      message "Failed to set password.  CloudOptimizer WebUI remains disabled.  Enable it at any time by executing 'passwd uiadmin'." warning
-else
-    message "CloudOptimizer WebUI remains disabled.  Enable it at any time by executing 'passwd uiadmin'."
 fi
 
 
@@ -1812,6 +1710,7 @@ elif [ "$manifest" == "1" ]; then
 else
     message "Cloudoptimizer has been successfully installed." title
 fi
+
 if [ "$noclean" == "1" ]; then
     message "Skipping clean up."
 else
